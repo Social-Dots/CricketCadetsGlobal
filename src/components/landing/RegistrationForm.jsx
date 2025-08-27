@@ -6,9 +6,9 @@ import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { X, Send, User, Mail, CheckCircle, Rocket, Star, Calendar, Loader2 } from 'lucide-react';
+import { X, Send, User, Mail, CheckCircle, Rocket, Star, Calendar, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
-// Removed Base44 dependency
+import { addToWaitlist } from '@/lib/supabase';
 
 export default function RegistrationForm({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
@@ -19,18 +19,23 @@ export default function RegistrationForm({ isOpen, onClose }) {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitted, setSubmitted] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
     setIsSubmitting(true);
+    setError(null);
+    
     try {
-      // Simulate form submission - replace with your preferred backend integration
-      console.log('Waitlist entry submitted:', formData);
+      const { data, error: supabaseError } = await addToWaitlist(formData);
       
-      // Simulate API delay
-      await new Promise(resolve => setTimeout(resolve, 1000));
+      if (supabaseError) {
+        throw supabaseError;
+      }
       
+      console.log('Waitlist entry submitted successfully:', data);
       setSubmitted(true);
+      
       setTimeout(() => {
         setSubmitted(false);
         setFormData({ parentName: '', email: '', childAge: '' });
@@ -38,7 +43,7 @@ export default function RegistrationForm({ isOpen, onClose }) {
       }, 3000);
     } catch (error) {
       console.error("Failed to submit waitlist entry:", error);
-      // You can add a user-facing error message here if needed
+      setError(error.message || 'Failed to submit. Please try again.');
     } finally {
       setIsSubmitting(false);
     }
@@ -81,6 +86,17 @@ export default function RegistrationForm({ isOpen, onClose }) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="space-y-6 pt-4">
+          {error && (
+            <motion.div
+              initial={{ opacity: 0, y: -10 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="bg-red-50 border border-red-200 rounded-lg p-4 flex items-center gap-3"
+            >
+              <AlertCircle className="w-5 h-5 text-red-500 flex-shrink-0" />
+              <p className="text-red-700 text-sm">{error}</p>
+            </motion.div>
+          )}
+          
             <div className="space-y-4">
               <div>
                 <Label htmlFor="parentName">Your Name *</Label>
