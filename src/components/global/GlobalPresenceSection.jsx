@@ -8,28 +8,24 @@ export default function GlobalPresenceSection() {
   const globalStats = [
     {
       icon: Globe,
-      number: "5+",
-      label: "Countries",
+      label: "Global Presence",
       detail: "Active Programs",
       color: "text-blue-500"
     },
     {
       icon: Users,
-      number: "10,000+",
       label: "Young Players",
       detail: "Worldwide",
       color: "text-emerald-500"
     },
     {
       icon: Trophy,
-      number: "200+",
       label: "Elite Coaches",
       detail: "Certified Professionals",
       color: "text-amber-500"
     },
     {
       icon: Target,
-      number: "50+",
       label: "Partnerships",
       detail: "Schools & Academies",
       color: "text-purple-500"

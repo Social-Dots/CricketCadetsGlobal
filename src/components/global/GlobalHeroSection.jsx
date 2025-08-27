@@ -68,7 +68,7 @@ export default function GlobalHeroSection({ onRegisterClick }) {
           </p>
           
           <p className="text-lg md:text-xl text-emerald-200/80 max-w-3xl mx-auto mb-12">
-            Join thousands of young cricketers across 5+ countries who are developing their skills with the world's most innovative cricket academy
+             Join thousands of young cricketers across different countries who are developing their skills with the world's most innovative cricket academy
           </p>
 
           {/* CTA Buttons with Modern Design */}
@@ -103,10 +103,10 @@ export default function GlobalHeroSection({ onRegisterClick }) {
           className="grid grid-cols-2 md:grid-cols-4 gap-6 max-w-5xl mx-auto">
 
           {[
-          { number: "5+", label: "Countries", icon: Globe, detail: "Global Presence" },
-          { number: "10,000+", label: "Players", icon: Users, detail: "Worldwide" },
-          { number: "200+", label: "Elite Coaches", icon: Award, detail: "Certified" },
-          { number: "50+", label: "Partnerships", icon: Trophy, detail: "Schools & Clubs" }].
+          { label: "Global", icon: Globe, detail: "Presence" },
+          { label: "Players", icon: Users, detail: "Worldwide" },
+          { label: "Elite Coaches", icon: Award, detail: "Certified" },
+          { label: "Partnerships", icon: Trophy, detail: "Schools & Clubs" }].
           map((stat, index) =>
           <motion.div
             key={index}
