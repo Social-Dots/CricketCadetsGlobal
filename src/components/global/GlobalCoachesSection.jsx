@@ -10,34 +10,44 @@ export default function GlobalCoachesSection() {
       name: "Fawad Ahmed",
       title: "Former Australian International Spinner",
       achievement: "Former Victorian Bushranger",
-      image: "https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      image: "https://slack-imgs.com/?c=1&o1=ro&url=https%3A%2F%2Fcontent.api.news%2Fv3%2Fimages%2Fbin%2F303027805caafa3e371555a35580ce17",
       specialties: ["Spin Bowling", "Mental Strength", "International Experience"],
-      quote: "Cricket is not just about technique - it's about building character and confidence that lasts a lifetime."
+      quote: "A former Victorian Bushranger and Australian international spinner, Fawad's journey from a refugee to a professional cricketer is an inspiration. His experience playing cricket at the highest level provides our programs with a deep understanding of spin bowling and professional pathways."
     },
     {
       name: "Peter Bol",
       title: "Olympic Middle-Distance Runner",
       achievement: "Tokyo 2020 Olympian",
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      image: "https://slack-imgs.com/?c=1&o1=ro&url=https%3A%2F%2Fcontent.olympics.com.au%2Fpublic%2Fstyles%2Fportrait_header_section%2Fs3%2F2025-04%2FBOL.jpg.webp%3Fitok%3DxToNH1w9",
       specialties: ["Mental Conditioning", "Peak Performance", "Resilience Training"],
-      quote: "The mindset that makes champions in athletics translates perfectly to cricket excellence."
+      quote: "An Olympic middle-distance runner, Peter Bol is a two-time Olympian and a national record holder. . He is a mentor in our program, offering invaluable insights into mental resilience, discipline, and the dedication required to perform at an elite level."
     },
     {
       name: "Bachar Houli",
       title: "AFL Premiership Champion",
       achievement: "Richmond Tigers Legend",
-      image: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      image: "https://slack-imgs.com/?c=1&o1=ro&url=https%3A%2F%2Fbacharhoulifoundation.com.au%2Fwp-content%2Fuploads%2F2023%2F11%2FOJ190917MK0362-e1566434253150-1200x1190-2-1024x1015.jpg",
       specialties: ["Leadership", "Team Building", "Community Engagement"],
-      quote: "Sport teaches us values that extend far beyond the field - respect, teamwork, and perseverance."
+      quote: "An AFL Premiership champion, Bachar is a highly respected figure in Australian sport. He excelled at the highest level of Australian Rules Football and is a leader in community engagement. He mentors our players on professionalism, leadership, and the importance of integrity on and off the field."
+    },
+
+    {
+      name: "Peter Hatzoglou",
+      title: "Right-arm Leg-spin Bowler",
+      achievement: "Big Bash League Short-form Specialist",
+      image: "https://encrypted-tbn1.gstatic.com/images?q=tbn:ANd9GcSVSZiMOMOUJQZtNBe_697OsYlgRhNRHhe02q3A8pS1Jxls1mE0Gphx96qKZiiA9Y669Q-VIkSB3_DmyAZwGFmxlw",
+      specialties: ["Right-arm Leg-spin Bowling", "googlies", "pressure handling"],
+      quote: "A Big Bash League short-form specialist, Peter Hatzoglou is known for his idiosyncratic bowling action, ability to bowl topspinners, sliders and googlies as well as the ability to bowl from a high release point at high pace. He provides our program with specific expertise on the tactics and skills required to succeed in the modern game."
     },
     {
       name: "Mohamed Irfan",
       title: "Former Hockey Australia Captain",
       achievement: "International Hockey Star",
-      image: "https://images.unsplash.com/photo-1507591064344-4c6ce005b128?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
+      image: "https://slack-imgs.com/?c=1&o1=ro&url=https%3A%2F%2Fwww.mediastorehouse.com.au%2Fp%2F773%2Fmuhammad-irfan-25108724.jpg.webp",
       specialties: ["Strategy & Tactics", "Captaincy", "International Experience"],
-      quote: "Great athletes are made through dedication, proper guidance, and believing in yourself."
-    }
+      quote: "Pakistani field hockey defender and captain with international experience, offering mentorship in team dynamics, discipline, and elite sport professionalism."
+    },
+    
   ];
 
   return (
@@ -53,17 +63,20 @@ export default function GlobalCoachesSection() {
         >
           <Badge className="bg-amber-500 text-amber-900 hover:bg-amber-400 mb-4 px-4 py-2">
             <Trophy className="w-4 h-4 mr-2" />
-            Our Coaches & Mentors
+            Meet Our Coaches and Mentors
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold mb-6">
-            Learn from the
+            Our Elite Coaching Panel -
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-amber-400 to-amber-200">
-              {" "}Best in the Game
+               Your Global Mentors
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Our international coaching team includes accredited cricket specialists and celebrated sports icons. 
-            We combine expert coaching with elite mentoring to develop well-rounded cricketers both on and off the field.
+            Cricket Cadets is proud to be supported by a select panel of internationally
+            experienced, elite coaches and sporting mentors. This global panel plays an
+            essential role in shaping our coaching philosophy, designing program curricula, and
+            continuously refining our training methods to ensure all players receive the highest-
+            quality cricket education regardless of location. 
           </p>
         </motion.div>
 
@@ -130,12 +143,13 @@ export default function GlobalCoachesSection() {
           className="bg-gradient-to-r from-emerald-900/50 to-amber-900/50 rounded-3xl p-8 md:p-12 text-center"
         >
           <h3 className="text-3xl md:text-4xl font-bold text-white mb-4">
-            World-Class Expertise at Every Level
+            Local Qualified Coaches: Your Everyday Cricket Mentors
           </h3>
           <p className="text-lg text-gray-300 max-w-4xl mx-auto leading-relaxed mb-8">
-            Beyond our celebrity mentors, Cricket Cadets employs certified coaches in every region, 
-            ensuring consistent, high-quality instruction that aligns with local cricket pathways 
-            while maintaining our global standards of excellence.
+            Our programs are delivered on the ground by carefully selected, fully accredited
+            coaches in every region. These professionals share our values of inclusion, player
+            safety, and continuous improvement, bringing the foundation laid by our elite panel to
+            life through daily coaching and mentoring.
           </p>
           
           <div className="grid md:grid-cols-3 gap-6">

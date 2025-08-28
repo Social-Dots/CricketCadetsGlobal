@@ -28,7 +28,9 @@ export default function OurStorySection() {
             Global Opportunity
           </h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Founded where cricket lives and breathes, now serving young players worldwide
+            To be the leading cricket academy legacy connecting players,
+            coaches, and the communities worldwide—shaping confident athletes and leaders on
+            and off the field.
           </p>
         </motion.div>
 
@@ -50,9 +52,9 @@ export default function OurStorySection() {
                 Our Mission
               </h3>
               <p className="text-xl md:text-2xl leading-relaxed max-w-4xl mx-auto font-light">
-                Every aspiring cricketer deserves access to world-class training and mentorship, 
+                To empower young cricketers globally to realize their full potential through 
                 <br className="hidden md:block" />
-                <strong>no matter where they play.</strong>
+                <strong>world-class coaching, inclusive programs, and unwavering support grounded in integrity and respect.</strong>
               </p>
             </div>
             

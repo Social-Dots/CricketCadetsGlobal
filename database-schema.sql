@@ -9,20 +9,12 @@ CREATE TABLE IF NOT EXISTS waitlist (
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Add RLS (Row Level Security) policies if needed
-ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
-
--- Allow anonymous users to insert into waitlist (for public registration)
-CREATE POLICY "Allow anonymous inserts" ON waitlist
-  FOR INSERT
-  TO anon
-  WITH CHECK (true);
-
--- Allow authenticated users to view all waitlist entries (for admin purposes)
-CREATE POLICY "Allow authenticated users to view all" ON waitlist
-  FOR SELECT
-  TO authenticated
-  USING (true);
+-- Insert some test data
+INSERT INTO waitlist (parent_name, email, child_age) VALUES 
+  ('John Doe', 'john.doe@example.com', '10'),
+  ('Jane Smith', 'jane.smith@example.com', '8'),
+  ('Mike Johnson', 'mike.johnson@example.com', '12')
+ON CONFLICT DO NOTHING;
 
 -- Optional: Add an index on email for faster lookups
 CREATE INDEX IF NOT EXISTS idx_waitlist_email ON waitlist(email);

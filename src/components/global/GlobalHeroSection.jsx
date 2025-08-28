@@ -68,7 +68,7 @@ export default function GlobalHeroSection({ onRegisterClick }) {
           </p>
           
           <p className="text-lg md:text-xl text-emerald-200/80 max-w-3xl mx-auto mb-12">
-             Join thousands of young cricketers across different countries who are developing their skills with the world's most innovative cricket academy
+             Be the part of a next-gen cricket academy shaping future stars through innovation and technology.
           </p>
 
           {/* CTA Buttons with Modern Design */}
