@@ -308,61 +308,6 @@ export default function DevelopmentPrograms() {
         </div>
        </section>
        
-       {/* Divider Section */}
-       <motion.div
-         initial={{ opacity: 0, y: 30, scale: 0.95 }}
-         whileInView={{ opacity: 1, y: 0, scale: 1 }}
-         transition={{ duration: 0.8, delay: 0.8, type: "spring", stiffness: 100 }}
-         viewport={{ once: true }}
-         className="text-center py-20 relative overflow-hidden"
-       >
-         {/* Background decoration */}
-         <div className="absolute inset-0 bg-gradient-to-r from-blue-50 via-purple-50 to-pink-50 opacity-50"></div>
-         <div className="absolute top-10 left-1/4 w-32 h-32 bg-gradient-to-r from-blue-200 to-purple-200 rounded-full opacity-20 blur-xl"></div>
-         <div className="absolute bottom-10 right-1/4 w-40 h-40 bg-gradient-to-r from-purple-200 to-pink-200 rounded-full opacity-20 blur-xl"></div>
-         
-         <div className="max-w-4xl mx-auto relative z-10">
-           <motion.div
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             transition={{ delay: 1.0 }}
-             viewport={{ once: true }}
-             className="inline-flex items-center justify-center px-6 py-3 bg-gradient-to-r from-blue-500 to-purple-500 text-white rounded-full text-sm font-semibold mb-8 shadow-lg hover:shadow-xl transition-shadow duration-300"
-           >
-             🏆 COMPLETE PROGRAMS
-           </motion.div>
-           
-           <motion.h2 
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             transition={{ delay: 1.1 }}
-             viewport={{ once: true }}
-             className="text-5xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent mb-6"
-           >
-             Our Complete Development Programs
-           </motion.h2>
-           
-           <motion.p 
-             initial={{ opacity: 0, y: 20 }}
-             whileInView={{ opacity: 1, y: 0 }}
-             transition={{ delay: 1.2 }}
-             viewport={{ once: true }}
-             className="text-xl text-gray-600 leading-relaxed max-w-3xl mx-auto"
-           >
-             Explore our comprehensive range of cricket development programs designed to nurture talent at every level, 
-             from beginners to advanced players seeking professional excellence.
-           </motion.p>
-           
-           <motion.div
-             initial={{ opacity: 0, scaleX: 0 }}
-             whileInView={{ opacity: 1, scaleX: 1 }}
-             transition={{ delay: 1.3, duration: 0.8 }}
-             viewport={{ once: true }}
-             className="w-32 h-1 bg-gradient-to-r from-blue-400 via-purple-400 to-pink-400 rounded-full mx-auto mt-8"
-           ></motion.div>
-         </div>
-       </motion.div>
-       
        {/* Other Program Sections */}
        <ProgramPhilosophy />
        <WhatTheyLearn />
