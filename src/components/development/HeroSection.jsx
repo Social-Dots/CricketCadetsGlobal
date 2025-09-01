@@ -19,15 +19,15 @@ export default function HeroSection({ onRegisterClick }) {
   };
 
   return (
-    <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden bg-gradient-to-t from-emerald-100 to-white">
+    <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden ">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=1770&q=80"
+          src="https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"
           alt="Kids playing cricket"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-white via-white/80 to-transparent"></div>
+        <div className="absolute inset-0  via-white/80 to-transparent"></div>
       </div>
 
       {/* Animated background shapes */}

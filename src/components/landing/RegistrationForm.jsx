@@ -4,17 +4,30 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Checkbox } from "@/components/ui/checkbox";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
-import { X, Send, User, Mail, CheckCircle, Rocket, Star, Calendar, Loader2, AlertCircle } from 'lucide-react';
+import { Send, CheckCircle, Rocket, Loader2, AlertCircle } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { addToWaitlist } from '@/lib/supabase';
 
 export default function RegistrationForm({ isOpen, onClose }) {
   const [formData, setFormData] = useState({
-    parentName: '',
+    // Child Information
+    childName: '',
+    dateOfBirth: '',
+    gender: '',
+    phoneNumber: '',
     email: '',
-    childAge: '',
+    suburbPostcode: '',
+    cricketExperience: '',
+    
+    // Parent/Guardian Information
+    parentGuardianName: '',
+    parentGuardianPhone: '',
+    parentGuardianEmail: '',
+    
+    // Consent
+    consentToContact: false,
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -27,18 +40,26 @@ export default function RegistrationForm({ isOpen, onClose }) {
     setError(null);
     
     try {
-      const { data, error: supabaseError } = await addToWaitlist(formData);
-      
-      if (supabaseError) {
-        throw supabaseError;
-      }
+      const data = await addToWaitlist(formData);
       
       console.log('Waitlist entry submitted successfully:', data);
       setSubmitted(true);
       
       setTimeout(() => {
         setSubmitted(false);
-        setFormData({ parentName: '', email: '', childAge: '' });
+        setFormData({
+          childName: '',
+          dateOfBirth: '',
+          gender: '',
+          phoneNumber: '',
+          email: '',
+          suburbPostcode: '',
+          cricketExperience: '',
+          parentGuardianName: '',
+          parentGuardianPhone: '',
+          parentGuardianEmail: '',
+          consentToContact: false,
+        });
         onClose();
       }, 3000);
     } catch (error) {
@@ -77,11 +98,11 @@ export default function RegistrationForm({ isOpen, onClose }) {
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
-      <DialogContent className="sm:max-w-lg">
+      <DialogContent className="sm:max-w-2xl max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle className="flex items-center gap-3 text-2xl">
             <Rocket className="w-6 h-6 text-emerald-500" />
-            Join the Waitlist
+            Join the Cricket Cadets Waitlist
           </DialogTitle>
         </DialogHeader>
 
@@ -97,20 +118,68 @@ export default function RegistrationForm({ isOpen, onClose }) {
             </motion.div>
           )}
           
-            <div className="space-y-4">
+          {/* Child Information Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Player Information</h3>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div>
-                <Label htmlFor="parentName">Your Name *</Label>
+                <Label htmlFor="childName">Player's Full Name *</Label>
                 <Input
-                  id="parentName"
-                  value={formData.parentName}
-                  onChange={(e) => handleInputChange('parentName', e.target.value)}
+                  id="childName"
+                  value={formData.childName}
+                  onChange={(e) => handleInputChange('childName', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="e.g. Jane Doe"
+                  placeholder="e.g. Alex Smith"
                 />
               </div>
+              
               <div>
-                <Label htmlFor="email">Email Address *</Label>
+                <Label htmlFor="dateOfBirth">Date of Birth *</Label>
+                <Input
+                  id="dateOfBirth"
+                  type="date"
+                  value={formData.dateOfBirth}
+                  onChange={(e) => handleInputChange('dateOfBirth', e.target.value)}
+                  required
+                  className="mt-1"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="gender">Gender *</Label>
+                <Select required onValueChange={(value) => handleInputChange('gender', value)}>
+                  <SelectTrigger className="mt-1">
+                    <SelectValue placeholder="Select gender" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Male</SelectItem>
+                    <SelectItem value="female">Female</SelectItem>
+                    <SelectItem value="other">Other</SelectItem>
+                  </SelectContent>
+                </Select>
+              </div>
+              
+              <div>
+                <Label htmlFor="phoneNumber">Player's Phone Number *</Label>
+                <Input
+                  id="phoneNumber"
+                  type="tel"
+                  value={formData.phoneNumber}
+                  onChange={(e) => handleInputChange('phoneNumber', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="e.g. 0412 345 678"
+                />
+              </div>
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="email">Player's Email Address *</Label>
                 <Input
                   id="email"
                   type="email"
@@ -118,32 +187,110 @@ export default function RegistrationForm({ isOpen, onClose }) {
                   onChange={(e) => handleInputChange('email', e.target.value)}
                   required
                   className="mt-1"
-                  placeholder="you@example.com"
+                  placeholder="player@example.com"
                 />
               </div>
+              
               <div>
-                <Label htmlFor="childAge">Player's Age *</Label>
-                <Select required onValueChange={(value) => handleInputChange('childAge', value)}>
-                  <SelectTrigger className="mt-1">
-                    <SelectValue placeholder="Select player's age" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    {Array.from({ length: 7 }, (_, i) => i + 8).map(age => (
-                      <SelectItem key={age} value={age.toString()}>{age} years old</SelectItem>
-                    ))}
-                  </SelectContent>
-                </Select>
+                <Label htmlFor="suburbPostcode">Suburb/Postcode *</Label>
+                <Input
+                  id="suburbPostcode"
+                  value={formData.suburbPostcode}
+                  onChange={(e) => handleInputChange('suburbPostcode', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="e.g. Melbourne 3000"
+                />
               </div>
             </div>
+            
+            <div>
+              <Label htmlFor="cricketExperience">Cricket Experience Level *</Label>
+              <Select required onValueChange={(value) => handleInputChange('cricketExperience', value)}>
+                <SelectTrigger className="mt-1">
+                  <SelectValue placeholder="Select experience level" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="beginner">Beginner</SelectItem>
+                  <SelectItem value="club">Club Level</SelectItem>
+                  <SelectItem value="representative">Representative Level</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+          </div>
           
-          <div className="flex justify-end gap-3">
+          {/* Parent/Guardian Information Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Parent/Guardian Information</h3>
+            
+            <div>
+              <Label htmlFor="parentGuardianName">Parent/Guardian Full Name *</Label>
+              <Input
+                id="parentGuardianName"
+                value={formData.parentGuardianName}
+                onChange={(e) => handleInputChange('parentGuardianName', e.target.value)}
+                required
+                className="mt-1"
+                placeholder="e.g. John Smith"
+              />
+            </div>
+            
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="parentGuardianPhone">Parent/Guardian Phone *</Label>
+                <Input
+                  id="parentGuardianPhone"
+                  type="tel"
+                  value={formData.parentGuardianPhone}
+                  onChange={(e) => handleInputChange('parentGuardianPhone', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="e.g. 0423 456 789"
+                />
+              </div>
+              
+              <div>
+                <Label htmlFor="parentGuardianEmail">Parent/Guardian Email *</Label>
+                <Input
+                  id="parentGuardianEmail"
+                  type="email"
+                  value={formData.parentGuardianEmail}
+                  onChange={(e) => handleInputChange('parentGuardianEmail', e.target.value)}
+                  required
+                  className="mt-1"
+                  placeholder="parent@example.com"
+                />
+              </div>
+            </div>
+          </div>
+          
+          {/* Consent Section */}
+          <div className="space-y-4">
+            <h3 className="text-lg font-semibold text-gray-900 border-b pb-2">Consent</h3>
+            
+            <div className="flex items-start space-x-3">
+              <Checkbox
+                id="consentToContact"
+                checked={formData.consentToContact}
+                onCheckedChange={(checked) => handleInputChange('consentToContact', checked)}
+                required
+                className="mt-1"
+              />
+              <Label htmlFor="consentToContact" className="text-sm leading-relaxed">
+                I consent to be contacted by Cricket Cadets regarding registration, programs, and updates. 
+                I understand that my child is under 18 and I am providing this information as their parent/guardian. *
+              </Label>
+            </div>
+          </div>
+          
+          <div className="flex justify-end gap-3 pt-4">
             <Button type="button" variant="outline" onClick={onClose}>
               Cancel
             </Button>
             <Button 
               type="submit" 
               className="bg-emerald-600 hover:bg-emerald-700 text-white px-8"
-              disabled={isSubmitting}
+              disabled={isSubmitting || !formData.consentToContact}
             >
               {isSubmitting ? (
                 <>
@@ -153,7 +300,7 @@ export default function RegistrationForm({ isOpen, onClose }) {
               ) : (
                 <>
                   <Send className="w-4 h-4 mr-2" />
-                  Get on the Waitlist
+                  Join Waitlist
                 </>
               )}
             </Button>

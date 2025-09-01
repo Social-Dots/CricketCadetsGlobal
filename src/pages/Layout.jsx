@@ -144,7 +144,7 @@ export default function Layout({ children, currentPageName }) {
                 onClick={handleRegisterClick}
                 className="bg-amber-500 hover:bg-amber-600 text-amber-900 font-bold px-6 py-2 text-sm rounded-lg shadow-md hover:shadow-amber-500/20 transition-all duration-300 hover:scale-105">
 
-                                Join Waitlist
+                                Join Expression of Interest
                                 <ArrowRight className="w-4 h-4 ml-2" />
                             </Button>
                         </div>
@@ -222,7 +222,7 @@ export default function Layout({ children, currentPageName }) {
                     onClick={handleRegisterClick}
                     className="w-full bg-amber-500 hover:bg-amber-600 text-amber-900 font-bold px-8 py-3 text-base rounded-lg shadow-md hover:shadow-amber-500/20 transition-all duration-300">
 
-                                            Join Our Waitlist Now
+                                            Join Expression of Interest
                                             <ArrowRight className="w-5 h-5 ml-2" />
                                         </Button>
                                     </motion.div>
@@ -238,4 +238,4 @@ export default function Layout({ children, currentPageName }) {
             <Footer />
         </div>);
 
-}
+}1

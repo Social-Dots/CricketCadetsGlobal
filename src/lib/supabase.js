@@ -9,31 +9,39 @@ if (!supabaseUrl || !supabaseAnonKey) {
 
 export const supabase = createClient(supabaseUrl, supabaseAnonKey)
 
-// Waitlist functions
+// Function to add a new entry to the waitlist
 export const addToWaitlist = async (waitlistData) => {
   try {
     const { data, error } = await supabase
       .from('waitlist')
       .insert([
         {
-          parent_name: waitlistData.parentName,
+          child_name: waitlistData.childName,
+          date_of_birth: waitlistData.dateOfBirth,
+          gender: waitlistData.gender,
+          phone_number: waitlistData.phoneNumber,
           email: waitlistData.email,
-          child_age: waitlistData.childAge,
-          created_at: new Date().toISOString()
+          suburb_postcode: waitlistData.suburbPostcode,
+          cricket_experience: waitlistData.cricketExperience,
+          parent_guardian_name: waitlistData.parentGuardianName,
+          parent_guardian_phone: waitlistData.parentGuardianPhone,
+          parent_guardian_email: waitlistData.parentGuardianEmail,
+          consent_to_contact: waitlistData.consentToContact,
         }
       ])
-      .select()
+      .select();
 
     if (error) {
-      throw error
+      console.error('Error adding to waitlist:', error);
+      throw error;
     }
 
-    return { data, error: null }
+    return data;
   } catch (error) {
-    console.error('Error adding to waitlist:', error)
-    return { data: null, error }
+    console.error('Supabase error:', error);
+    throw error;
   }
-}
+};
 
 export const getWaitlistEntries = async () => {
   try {
