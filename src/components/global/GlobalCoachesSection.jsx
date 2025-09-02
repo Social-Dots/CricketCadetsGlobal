@@ -167,6 +167,7 @@ export default function GlobalCoachesSection() {
               <h4 className="text-lg font-bold text-white mb-2">Local Expertise</h4>
               <p className="text-gray-300 text-sm">Understanding of regional cricket pathways and development systems</p>
             </div>
+            
             <div className="text-center">
               <div className="w-12 h-12 bg-blue-500 rounded-full flex items-center justify-center mx-auto mb-3">
                 <Target className="w-6 h-6 text-white" />
