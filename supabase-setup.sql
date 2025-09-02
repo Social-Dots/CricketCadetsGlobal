@@ -1,8 +1,8 @@
--- Comprehensive CMS Database Schema for Cricket Cadets Global
--- This schema includes all content management, user roles, and audit logging
+-- Cricket Cadets Global - Supabase Database Setup Script
+-- Execute this script in your Supabase SQL Editor to create all tables
 
--- Enable Row Level Security
-ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret-here';
+-- Enable necessary extensions
+CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
 
 -- Users and Authentication
 CREATE TABLE IF NOT EXISTS users (
@@ -37,7 +37,7 @@ CREATE TABLE IF NOT EXISTS pages (
   slug TEXT NOT NULL UNIQUE,
   meta_description TEXT,
   meta_keywords TEXT,
-  content JSONB NOT NULL, -- Stores structured page content
+  content JSONB NOT NULL,
   status TEXT DEFAULT 'draft' CHECK (status IN ('draft', 'published', 'archived')),
   featured_image TEXT,
   template TEXT DEFAULT 'default',
@@ -84,8 +84,8 @@ CREATE TABLE IF NOT EXISTS programs (
   age_group TEXT,
   duration TEXT,
   price DECIMAL(10,2),
-  price_period TEXT, -- monthly, weekly, per session
-  features JSONB, -- Array of features
+  price_period TEXT,
+  features JSONB,
   image TEXT,
   icon TEXT,
   color_scheme TEXT,
@@ -109,8 +109,8 @@ CREATE TABLE IF NOT EXISTS coaches (
   bio TEXT,
   quote TEXT,
   image TEXT,
-  specialties JSONB, -- Array of specialties
-  social_links JSONB, -- Object with social media links
+  specialties JSONB,
+  social_links JSONB,
   is_featured BOOLEAN DEFAULT false,
   is_active BOOLEAN DEFAULT true,
   sort_order INTEGER DEFAULT 0,
@@ -154,9 +154,9 @@ CREATE TABLE IF NOT EXISTS locations (
   longitude DECIMAL(11, 8),
   phone TEXT,
   email TEXT,
-  facilities JSONB, -- Array of facilities
-  images JSONB, -- Array of image URLs
-  operating_hours JSONB, -- Object with day/time mappings
+  facilities JSONB,
+  images JSONB,
+  operating_hours JSONB,
   is_active BOOLEAN DEFAULT true,
   sort_order INTEGER DEFAULT 0,
   created_by UUID REFERENCES users(id),
@@ -193,15 +193,14 @@ CREATE TABLE IF NOT EXISTS site_settings (
   value JSONB NOT NULL,
   description TEXT,
   type TEXT DEFAULT 'text' CHECK (type IN ('text', 'number', 'boolean', 'json', 'image', 'url')),
-  is_public BOOLEAN DEFAULT false, -- Whether setting can be accessed by frontend
+  is_public BOOLEAN DEFAULT false,
   updated_by UUID REFERENCES users(id),
   updated_at TIMESTAMPTZ DEFAULT NOW()
 );
 
--- Waitlist (Enhanced from existing)
+-- Waitlist (Enhanced)
 CREATE TABLE IF NOT EXISTS waitlist (
   id BIGSERIAL PRIMARY KEY,
-  -- Child Information
   child_name TEXT NOT NULL,
   date_of_birth DATE NOT NULL,
   gender TEXT NOT NULL CHECK (gender IN ('male', 'female', 'other')),
@@ -209,29 +208,20 @@ CREATE TABLE IF NOT EXISTS waitlist (
   email TEXT NOT NULL,
   suburb_postcode TEXT NOT NULL,
   cricket_experience TEXT NOT NULL CHECK (cricket_experience IN ('beginner', 'club', 'representative')),
-  
-  -- Parent/Guardian Information
   parent_guardian_name TEXT NOT NULL,
   parent_guardian_phone TEXT NOT NULL,
   parent_guardian_email TEXT NOT NULL,
-  
-  -- Additional CMS fields
   program_interest BIGINT REFERENCES programs(id),
   location_preference BIGINT REFERENCES locations(id),
   status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected', 'contacted')),
   notes TEXT,
   priority INTEGER DEFAULT 0,
-  
-  -- Consent
   consent_to_contact BOOLEAN NOT NULL DEFAULT false,
   consent_to_marketing BOOLEAN DEFAULT false,
-  
-  -- Tracking
-  source TEXT, -- How they found us
+  source TEXT,
   utm_source TEXT,
   utm_medium TEXT,
   utm_campaign TEXT,
-  
   assigned_to UUID REFERENCES users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
   updated_at TIMESTAMPTZ DEFAULT NOW()
@@ -273,8 +263,8 @@ CREATE TABLE IF NOT EXISTS audit_logs (
 CREATE TABLE IF NOT EXISTS navigation_menus (
   id BIGSERIAL PRIMARY KEY,
   name TEXT NOT NULL,
-  location TEXT NOT NULL, -- header, footer, sidebar
-  items JSONB NOT NULL, -- Nested menu structure
+  location TEXT NOT NULL,
+  items JSONB NOT NULL,
   is_active BOOLEAN DEFAULT true,
   updated_by UUID REFERENCES users(id),
   created_at TIMESTAMPTZ DEFAULT NOW(),
@@ -319,32 +309,6 @@ CREATE TRIGGER update_waitlist_updated_at BEFORE UPDATE ON waitlist FOR EACH ROW
 CREATE TRIGGER update_content_categories_updated_at BEFORE UPDATE ON content_categories FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 CREATE TRIGGER update_navigation_menus_updated_at BEFORE UPDATE ON navigation_menus FOR EACH ROW EXECUTE FUNCTION update_updated_at_column();
 
--- Insert Default Admin User (password: admin123 - change in production!)
-INSERT INTO users (email, password_hash, full_name, role) VALUES 
-('admin@cricketcadets.com', '$2b$10$rQZ9QmjKjKjKjKjKjKjKjOeH8H8H8H8H8H8H8H8H8H8H8H8H8H8H8', 'System Administrator', 'super_admin')
-ON CONFLICT (email) DO NOTHING;
-
--- Insert Default Content Categories
-INSERT INTO content_categories (name, slug, description) VALUES 
-('Programs', 'programs', 'Cricket training programs'),
-('News', 'news', 'Latest news and updates'),
-('Resources', 'resources', 'Training resources and guides'),
-('About', 'about', 'About us content')
-ON CONFLICT (slug) DO NOTHING;
-
--- Insert Default Site Settings
-INSERT INTO site_settings (key, value, description, type, is_public) VALUES 
-('site_name', '"Cricket Cadets Global"', 'Website name', 'text', true),
-('site_description', '"The World\s Premier Cricket Academy"', 'Websit1e description', 'text', true),
-('contact_email', '"info@cricketcadets.com"', 'Main contact email', 'text', true),
-('contact_phone', '"+1-800-CRICKET"', 'Main contact phone', 'text', true),
-('social_facebook', '"https://facebook.com/cricketcadets"', 'Facebook URL', 'url', true),
-('social_instagram', '"https://instagram.com/cricketcadets"', 'Instagram URL', 'url', true),
-('social_twitter', '"https://twitter.com/cricketcadets"', 'Twitter URL', 'url', true),
-('analytics_ga_id', '""', 'Google Analytics ID', 'text', false),
-('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', false)
-ON CONFLICT (key) DO NOTHING;
-
 -- Enable Row Level Security
 ALTER TABLE users ENABLE ROW LEVEL SECURITY;
 ALTER TABLE pages ENABLE ROW LEVEL SECURITY;
@@ -357,7 +321,7 @@ ALTER TABLE waitlist ENABLE ROW LEVEL SECURITY;
 ALTER TABLE media ENABLE ROW LEVEL SECURITY;
 ALTER TABLE audit_logs ENABLE ROW LEVEL SECURITY;
 
--- Create RLS Policies (Basic - can be enhanced based on requirements)
+-- Create RLS Policies for Public Access
 CREATE POLICY "Public content is viewable by everyone" ON pages FOR SELECT USING (status = 'published');
 CREATE POLICY "Public programs are viewable by everyone" ON programs FOR SELECT USING (status = 'active');
 CREATE POLICY "Public coaches are viewable by everyone" ON coaches FOR SELECT USING (is_active = true);
@@ -367,15 +331,38 @@ CREATE POLICY "Published blog posts are viewable by everyone" ON blog_posts FOR 
 CREATE POLICY "Public media is viewable by everyone" ON media FOR SELECT USING (is_public = true);
 CREATE POLICY "Users can insert waitlist entries" ON waitlist FOR INSERT WITH CHECK (true);
 
--- Admin policies (users with admin role can do everything)
-CREATE POLICY "Admins can do everything" ON pages FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on programs" ON programs FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on coaches" ON coaches FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on testimonials" ON testimonials FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on locations" ON locations FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on blog_posts" ON blog_posts FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on waitlist" ON waitlist FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can do everything on media" ON media FOR ALL USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
-CREATE POLICY "Admins can view audit logs" ON audit_logs FOR SELECT USING (auth.jwt() ->> 'role' IN ('super_admin', 'admin'));
+-- Admin policies (Note: These will need to be adjusted based on your auth setup)
+-- For now, these are placeholder policies that you'll need to modify
+CREATE POLICY "Admins can manage pages" ON pages FOR ALL USING (true);
+CREATE POLICY "Admins can manage programs" ON programs FOR ALL USING (true);
+CREATE POLICY "Admins can manage coaches" ON coaches FOR ALL USING (true);
+CREATE POLICY "Admins can manage testimonials" ON testimonials FOR ALL USING (true);
+CREATE POLICY "Admins can manage locations" ON locations FOR ALL USING (true);
+CREATE POLICY "Admins can manage blog_posts" ON blog_posts FOR ALL USING (true);
+CREATE POLICY "Admins can manage waitlist" ON waitlist FOR ALL USING (true);
+CREATE POLICY "Admins can manage media" ON media FOR ALL USING (true);
+CREATE POLICY "Admins can view audit logs" ON audit_logs FOR SELECT USING (true);
 
-COMMIT;
+-- Insert Default Content Categories
+INSERT INTO content_categories (name, slug, description) VALUES 
+('Programs', 'programs', 'Cricket training programs'),
+('News', 'news', 'Latest news and updates'),
+('Resources', 'resources', 'Training resources and guides'),
+('About', 'about', 'About us content')
+ON CONFLICT (slug) DO NOTHING;
+
+-- Insert Default Site Settings
+INSERT INTO site_settings (key, value, description, type, is_public) VALUES 
+('site_name', '"Cricket Cadets Global"', 'Website name', 'text', true),
+('site_description', '"The World''s Premier Cricket Academy"', 'Website description', 'text', true),
+('contact_email', '"info@cricketcadets.com"', 'Main contact email', 'text', true),
+('contact_phone', '"+1-800-CRICKET"', 'Main contact phone', 'text', true),
+('social_facebook', '"https://facebook.com/cricketcadets"', 'Facebook URL', 'url', true),
+('social_instagram', '"https://instagram.com/cricketcadets"', 'Instagram URL', 'url', true),
+('social_twitter', '"https://twitter.com/cricketcadets"', 'Twitter URL', 'url', true),
+('analytics_ga_id', '""', 'Google Analytics ID', 'text', false),
+('maintenance_mode', 'false', 'Enable maintenance mode', 'boolean', false)
+ON CONFLICT (key) DO NOTHING;
+
+-- Success message
+SELECT 'Database setup completed successfully! All tables, indexes, and initial data have been created.' as status;

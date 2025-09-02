@@ -1,60 +1,54 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Quote, Star, Globe, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { getFeaturedTestimonials } from '@/lib/supabase';
 
 export default function VideoTestimonialsSection() {
   const [activeVideo, setActiveVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [testimonials, setTestimonials] = useState([]);
+  const [loading, setLoading] = useState(true);
 
-  const testimonials = [
-    {
-      id: 1,
-      name: "Sarah Mitchell",
-      role: "Parent, Toronto",
-      country: "🇨🇦 Canada",
-      videoThumbnail: "https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quote: "My daughter Emma has grown so much in confidence and skill since joining Cricket Cadets. The coaching is world-class, and she absolutely loves going to training.",
-      rating: 5,
-      playerAge: "Age 10",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ" // Placeholder - replace with actual video
-    },
-    {
-      id: 2,
-      name: "James Thompson",
-      role: "Former County Player & Parent, Melbourne",
-      country: "🇦🇺 Australia",
-      videoThumbnail: "https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quote: "As someone who played county cricket, I know good coaching when I see it. Cricket Cadets has exceeded all my expectations. My son has developed proper technique and genuine love for the game.",
-      rating: 5,
-      playerAge: "Age 13",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 3,
-      name: "Priya Sharma",
-      role: "Parent, Birmingham",
-      country: "🇬🇧 United Kingdom",
-      videoThumbnail: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quote: "The international standard of coaching combined with the warmth and encouragement of the staff makes Cricket Cadets special. My twins have flourished here.",
-      rating: 5,
-      playerAge: "Age 9 & 11",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    },
-    {
-      id: 4,
-      name: "Marcus Johnson",
-      role: "Youth Coach & Parent, Auckland",
-      country: "🇳🇿 New Zealand",
-      videoThumbnail: "https://images.unsplash.com/photo-1551698618-1dfe5d97d256?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80",
-      quote: "The way Cricket Cadets combines traditional cricket wisdom with modern training methods is incredible. My daughter has made remarkable progress in just one season.",
-      rating: 5,
-      playerAge: "Age 12",
-      videoUrl: "https://www.youtube.com/embed/dQw4w9WgXcQ"
-    }
-  ];
+  useEffect(() => {
+    const fetchTestimonials = async () => {
+      try {
+        const data = await getFeaturedTestimonials();
+        // Filter for video testimonials only
+        const videoTestimonials = data?.filter(testimonial => testimonial.is_video && testimonial.video_url) || [];
+        setTestimonials(videoTestimonials);
+      } catch (error) {
+        console.error('Error fetching testimonials:', error);
+        setTestimonials([]);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTestimonials();
+  }, []);
+
+  if (loading) {
+    return (
+      <section id="testimonials" className="py-24 bg-gradient-to-b from-gray-900 to-gray-800">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-700 rounded w-64 mx-auto mb-4"></div>
+              <div className="h-12 bg-gray-700 rounded w-96 mx-auto mb-6"></div>
+              <div className="h-6 bg-gray-700 rounded w-full max-w-4xl mx-auto"></div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
+  if (testimonials.length === 0) {
+    return null; // Don't render section if no video testimonials
+  }
 
   const nextTestimonial = () => {
     setActiveVideo((prev) => (prev + 1) % testimonials.length);
@@ -104,7 +98,7 @@ export default function VideoTestimonialsSection() {
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
               {isPlaying ? (
                 <iframe
-                  src={testimonials[activeVideo].videoUrl}
+                  src={testimonials[activeVideo].video_url}
                   title={`Testimonial from ${testimonials[activeVideo].name}`}
                   className="w-full h-full"
                   allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -113,7 +107,7 @@ export default function VideoTestimonialsSection() {
               ) : (
                 <>
                   <img
-                    src={testimonials[activeVideo].videoThumbnail}
+                    src={testimonials[activeVideo].image || 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
                     alt={`${testimonials[activeVideo].name} testimonial`}
                     className="w-full h-full object-cover"
                   />
@@ -187,16 +181,18 @@ export default function VideoTestimonialsSection() {
                     <div className="relative mb-6">
                       <Quote className="w-12 h-12 text-amber-400/30 absolute -top-2 -left-2" />
                       <p className="text-lg text-gray-200 leading-relaxed pl-8 italic">
-                        "{testimonials[activeVideo].quote}"
+                        "{testimonials[activeVideo].content}"
                       </p>
                     </div>
 
                     {/* Rating */}
-                    <div className="flex items-center gap-1 mb-4">
-                      {[...Array(testimonials[activeVideo].rating)].map((_, i) => (
-                        <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
-                      ))}
-                    </div>
+                    {testimonials[activeVideo].rating && (
+                      <div className="flex items-center gap-1 mb-4">
+                        {[...Array(testimonials[activeVideo].rating)].map((_, i) => (
+                          <Star key={i} className="w-5 h-5 fill-amber-400 text-amber-400" />
+                        ))}
+                      </div>
+                    )}
 
                     {/* Parent Info */}
                     <div className="flex items-center gap-4 mb-4">
@@ -204,18 +200,19 @@ export default function VideoTestimonialsSection() {
                         <h4 className="text-xl font-bold text-white">
                           {testimonials[activeVideo].name}
                         </h4>
-                        <p className="text-gray-400">{testimonials[activeVideo].role}</p>
+                        {testimonials[activeVideo].title && (
+                          <p className="text-gray-400">{testimonials[activeVideo].title}</p>
+                        )}
                       </div>
                     </div>
 
-                    {/* Location and Player Age */}
+                    {/* Location */}
                     <div className="flex flex-wrap gap-3">
-                      <Badge className="bg-emerald-600 text-white">
-                        {testimonials[activeVideo].country}
-                      </Badge>
-                      <Badge variant="outline" className="border-amber-500 text-amber-400">
-                        Player: {testimonials[activeVideo].playerAge}
-                      </Badge>
+                      {testimonials[activeVideo].location && (
+                        <Badge className="bg-emerald-600 text-white">
+                          {testimonials[activeVideo].location}
+                        </Badge>
+                      )}
                     </div>
                   </CardContent>
                 </Card>

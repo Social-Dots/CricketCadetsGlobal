@@ -5,6 +5,19 @@ import Home from "./Home";
 import Canada from "./Canada";
 
 import DevelopmentPrograms from "./DevelopmentPrograms";
+import Register from "./Register";
+
+// Admin components
+import AdminLayout from "./admin/AdminLayout";
+import Login from "./admin/Login";
+import Dashboard from "./admin/Dashboard";
+import Candidates from "./admin/Candidates";
+import AdminPages from "./admin/Pages";
+import Programs from "./admin/Programs";
+import Coaches from "./admin/Coaches";
+import Testimonials from "./admin/Testimonials";
+import Locations from "./admin/Locations";
+import Settings from "./admin/Settings";
 
 import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
 
@@ -15,6 +28,8 @@ const PAGES = {
     Canada: Canada,
     
     DevelopmentPrograms: DevelopmentPrograms,
+    
+    Register: Register,
     
 }
 
@@ -37,24 +52,38 @@ function PagesContent() {
     const currentPage = _getCurrentPage(location.pathname);
     
     return (
-        <Layout currentPageName={currentPage}>
-            <Routes>            
-                
-                    <Route path="/" element={<Home />} />
-                
-                
-                <Route path="/Home" element={<Home />} />
-                
-                <Route path="/Canada" element={<Canada />} />
-                
-                <Route path="/DevelopmentPrograms" element={<DevelopmentPrograms />} />
-                
-            </Routes>
-        </Layout>
+        <Routes>
+            {/* Admin Routes */}
+            <Route path="/admin/login" element={<Login />} />
+            <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="dashboard" element={<Dashboard />} />
+                <Route path="candidates" element={<Candidates />} />
+                <Route path="pages" element={<AdminPages />} />
+                <Route path="testimonials" element={<Testimonials />} />
+                <Route path="locations" element={<Locations />} />
+                <Route path="settings" element={<Settings />} />
+                <Route path="programs" element={<Programs />} />
+                <Route path="coaches" element={<Coaches />} />
+            </Route>
+            
+            {/* Public Routes */}
+            <Route path="/*" element={
+                <Layout currentPageName={currentPage}>
+                    <Routes>            
+                        <Route path="/" element={<Home />} />
+                        <Route path="/Home" element={<Home />} />
+                        <Route path="/Canada" element={<Canada />} />
+                        <Route path="/DevelopmentPrograms" element={<DevelopmentPrograms />} />
+                        <Route path="/register" element={<Register />} />
+                    </Routes>
+                </Layout>
+            } />
+        </Routes>
     );
 }
 
-export default function Pages() {
+export default function AppPages() {
     return (
         <Router>
             <PagesContent />
