@@ -1,11 +1,30 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Sparkles, Sun } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getDevelopmentHeroSection } from '@/lib/supabase';
 
 export default function HeroSection({ onRegisterClick }) {
-  const title = "Where Fun Meets Fundamentals";
+  const [heroData, setHeroData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const data = await getDevelopmentHeroSection();
+        setHeroData(data);
+      } catch (error) {
+        console.error('Error fetching hero data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
+  
+  const title = heroData?.title || "Where Fun Meets Fundamentals";
   const letters = Array.from(title);
 
   const containerVariants = {
@@ -18,16 +37,30 @@ export default function HeroSection({ onRegisterClick }) {
     visible: { opacity: 1, y: 0 }
   };
 
+  if (loading) {
+    return (
+      <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden">
+        <div className="text-center">
+          <div className="animate-pulse">
+            <div className="h-8 bg-gray-300 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-16 bg-gray-300 rounded w-96 mx-auto mb-6"></div>
+            <div className="h-6 bg-gray-300 rounded w-full max-w-2xl mx-auto"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
+
   return (
     <section className="relative h-[80vh] min-h-[600px] flex items-center justify-center overflow-hidden ">
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src="https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"
+          src={heroData?.background_image || "https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"}
           alt="Kids playing cricket"
           className="w-full h-full object-cover opacity-30"
         />
-        <div className="absolute inset-0  via-white/80 to-transparent"></div>
+        <div className="absolute inset-0 via-white/80 to-transparent" style={{ opacity: heroData?.overlay_opacity || 0.8 }}></div>
       </div>
 
       {/* Animated background shapes */}
@@ -45,10 +78,12 @@ export default function HeroSection({ onRegisterClick }) {
       {/* Content */}
       <div className="relative z-10 max-w-7xl mx-auto px-6 text-center">
         <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.8 }}>
-          <Badge className="bg-amber-400 text-amber-900 hover:bg-amber-500 mb-6 px-4 py-2 text-base shadow-lg">
-            <Sparkles className="w-5 h-5 mr-2" />
-            Development Programs (Ages 8-12)
-          </Badge>
+          {heroData?.badge_text && (
+            <Badge className="bg-amber-400 text-amber-900 hover:bg-amber-500 mb-6 px-4 py-2 text-base shadow-lg">
+              <Sparkles className="w-5 h-5 mr-2" />
+              {heroData.badge_text}
+            </Badge>
+          )}
           
           <motion.h1
             variants={containerVariants}
@@ -63,15 +98,18 @@ export default function HeroSection({ onRegisterClick }) {
             ))}
           </motion.h1>
           
-          <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-10">
-            Our programs for young players build a lifelong love for cricket through engaging activities, positive coaching, and play-based learning.
-          </p>
+          {heroData?.subtitle && (
+            <p className="text-xl md:text-2xl text-gray-600 max-w-3xl mx-auto mb-6">
+              Be the part of the next-gen cricket family — where passion meets innovation, young talent grows with global mentorship, and every player is prepared to shine on and off the field.
+            </p>
+          )}
+          
 
           <Button
-            onClick={onRegisterClick}
+            onClick={heroData?.cta_primary_link ? () => window.location.href = heroData.cta_primary_link : onRegisterClick}
             className="group bg-emerald-600 hover:bg-emerald-700 text-white font-bold px-8 py-6 text-lg rounded-full shadow-xl hover:shadow-emerald-500/30 transition-all duration-300 hover:scale-105"
           >
-            Enroll for a Camp
+            {heroData?.cta_primary_text || "Enroll for a Camp"}
             <ArrowRight className="w-5 h-5 ml-3 group-hover:translate-x-1 transition-transform" />
           </Button>
         </motion.div>

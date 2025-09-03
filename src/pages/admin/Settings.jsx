@@ -81,8 +81,21 @@ const Settings = () => {
     try {
       setLoading(true)
       const data = await getSiteSettings()
-      if (data && data.length > 0) {
-        setSettings(prev => ({ ...prev, ...data[0].settings }))
+      if (data && Object.keys(data).length > 0) {
+        // Ensure business_hours exists with default structure
+        const settingsWithDefaults = {
+          ...data,
+          business_hours: data.business_hours || {
+            monday: { open: '09:00', close: '17:00', closed: false },
+            tuesday: { open: '09:00', close: '17:00', closed: false },
+            wednesday: { open: '09:00', close: '17:00', closed: false },
+            thursday: { open: '09:00', close: '17:00', closed: false },
+            friday: { open: '09:00', close: '17:00', closed: false },
+            saturday: { open: '09:00', close: '15:00', closed: false },
+            sunday: { open: '10:00', close: '14:00', closed: true }
+          }
+        }
+        setSettings(prev => ({ ...prev, ...settingsWithDefaults }))
       }
     } catch (error) {
       console.error('Error fetching settings:', error)

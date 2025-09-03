@@ -1,13 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Heart, Shield, Users, Trophy, Star, Target } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getDevelopmentPhilosophy } from '@/lib/supabase';
 
 export default function ProgramPhilosophy() {
-  const principles = [
+  const [principles, setPrinciples] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Icon mapping for dynamic content
+  const iconMap = {
+    'Heart': Heart,
+    'Users': Users,
+    'Shield': Shield,
+    'Trophy': Trophy,
+    'Star': Star,
+    'Target': Target
+  };
+
+  // Default principles as fallback
+  const defaultPrinciples = [
     { 
-      icon: Heart, 
+      icon: "Heart", 
       title: "Fun First", 
       description: "Creating positive memories is our top priority. We foster joy in every drill and game, ensuring cricket becomes a lifelong passion.", 
       color: "text-red-500",
@@ -16,7 +31,7 @@ export default function ProgramPhilosophy() {
       borderColor: "border-red-200"
     },
     { 
-      icon: Users, 
+      icon: "Users", 
       title: "Team Spirit", 
       description: "Learning to be a great teammate is as important as learning to bat or bowl. We build friendships that last beyond the field.", 
       color: "text-blue-500",
@@ -25,7 +40,7 @@ export default function ProgramPhilosophy() {
       borderColor: "border-blue-200"
     },
     { 
-      icon: Shield, 
+      icon: "Shield", 
       title: "Build Confidence", 
       description: "A safe, supportive space where every child is encouraged to try their best and grow. Mistakes are learning opportunities.", 
       color: "text-emerald-500",
@@ -34,7 +49,7 @@ export default function ProgramPhilosophy() {
       borderColor: "border-emerald-200"
     },
     { 
-      icon: Trophy, 
+      icon: "Trophy", 
       title: "Celebrate Effort", 
       description: "We recognize hard work and personal progress, not just winning. Every improvement deserves recognition and celebration.", 
       color: "text-amber-500",
@@ -43,6 +58,26 @@ export default function ProgramPhilosophy() {
       borderColor: "border-amber-200"
     }
   ];
+
+  useEffect(() => {
+    const fetchPhilosophy = async () => {
+      try {
+        const data = await getDevelopmentPhilosophy();
+        if (data && data.length > 0) {
+          setPrinciples(data);
+        } else {
+          setPrinciples(defaultPrinciples);
+        }
+      } catch (error) {
+        console.error('Error fetching philosophy:', error);
+        setPrinciples(defaultPrinciples);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPhilosophy();
+  }, []);
 
   return (
     <section className="py-24 bg-gradient-to-br from-gray-50 via-white to-blue-50 relative overflow-hidden">
@@ -73,9 +108,14 @@ export default function ProgramPhilosophy() {
           </p>
         </motion.div>
 
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          </div>
+        ) : (
         <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           {principles.map((principle, index) => {
-            const IconComponent = principle.icon;
+            const IconComponent = iconMap[principle.icon];
             return (
               <motion.div
                 key={index}
@@ -122,6 +162,7 @@ export default function ProgramPhilosophy() {
             );
           })}
         </div>
+        )}
       </div>
     </section>
   );

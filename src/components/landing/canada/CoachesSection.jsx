@@ -1,36 +1,31 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Star, Award, Trophy, Users, Target, Shield, Heart, Globe, Quote } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getCoaches } from '@/lib/supabase';
 
 export default function CoachesSection() {
-  const coaches = [
-    {
-      name: "?",
-      title: "Youth Development Specialist",
-      experience: "15+ years in youth cricket",
-      specialties: ["Making Learning Fun", "Building Confidence", "Technique for Kids"],
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      quote: "We are bringing a proven, passion-first approach to Canada. Our focus is on nurturing the love for the game while building world-class skills."
-    },
-    {
-      name: "?",
-      title: "Local Cricket Champion",
-      experience: "12+ years in Canadian cricket",
-      specialties: ["Local Talent ID", "Team Building", "Skill Development"],
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      quote: "This collaboration is a dream come true for Canadian cricket. Our kids deserve the world's best techniques, delivered with a true understanding of their unique journey."
-    },
-    {
-      name: "?",
-      title: "International Technique Expert",
-      experience: "10+ years professional background",
-      specialties: ["Proven Techniques", "Individual Growth", "Passion Development"],
-      image: "https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-4.0.3&auto=format&fit=crop&w=400&q=80",
-      quote: "I believe in combining proven techniques with a genuine love for the game. When kids are passionate, learning becomes magical. I can't wait to see that spark in Canada."
-    }
-  ];
+  const [coaches, setCoaches] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchCoaches = async () => {
+      try {
+        const data = await getCoaches();
+        // Filter for featured coaches or limit to first 3
+        const featuredCoaches = data?.filter(coach => coach.is_featured) || [];
+        const displayCoaches = featuredCoaches.length > 0 ? featuredCoaches.slice(0, 3) : (data || []).slice(0, 3);
+        setCoaches(displayCoaches);
+      } catch (error) {
+        console.error('Error fetching coaches:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCoaches();
+  }, []);
 
   const coachingPhilosophy = [
     {
@@ -54,6 +49,38 @@ export default function CoachesSection() {
       description: "Fusing Australian cricket excellence with Canadian coaching warmth and spirit."
     }
   ];
+
+  if (loading) {
+    return (
+      <section id="coaches" className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-16">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-48 mx-auto mb-4"></div>
+              <div className="h-12 bg-gray-200 rounded w-96 mx-auto mb-6"></div>
+              <div className="h-6 bg-gray-200 rounded w-full max-w-4xl mx-auto"></div>
+            </div>
+          </div>
+          <div className="grid lg:grid-cols-3 gap-8">
+            {[1, 2, 3].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="bg-white rounded-lg shadow-lg p-6">
+                  <div className="w-24 h-24 bg-gray-200 rounded-full mx-auto mb-4"></div>
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mx-auto mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-1/2 mx-auto mb-4"></div>
+                  <div className="h-20 bg-gray-200 rounded w-full mb-4"></div>
+                  <div className="flex gap-2 justify-center">
+                    <div className="h-6 bg-gray-200 rounded w-16"></div>
+                    <div className="h-6 bg-gray-200 rounded w-20"></div>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="coaches" className="py-20 bg-white">
@@ -88,51 +115,72 @@ export default function CoachesSection() {
 
         {/* Coaches Grid */}
         <div className="grid lg:grid-cols-3 gap-8 mb-20">
-          {coaches.map((coach, index) =>
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 30 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ duration: 0.6, delay: index * 0.2 }}
-              viewport={{ once: true }}>
+          {coaches.length > 0 ? (
+            coaches.map((coach, index) =>
+              <motion.div
+                key={coach.id || index}
+                initial={{ opacity: 0, y: 30 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: index * 0.2 }}
+                viewport={{ once: true }}>
 
-              <Card className="h-full hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-0 shadow-lg overflow-hidden group flex flex-col">
-                <CardHeader className="pb-6 text-center">
-                  {/* Question Mark Profile Image */}
-                  <div className="w-24 h-24 rounded-full mx-auto bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center ring-4 ring-emerald-100 group-hover:ring-emerald-300 transition-all duration-300 mb-4">
-                    <span className="text-4xl font-bold text-white">?</span>
-                  </div>
-
-                  <CardTitle className="text-xl font-bold text-gray-900 mb-1">
-                    {coach.name}
-                  </CardTitle>
-
-                  <p className="text-emerald-600 font-semibold">
-                    {coach.title}
-                  </p>
-                </CardHeader>
-
-                <CardContent className="flex-grow flex flex-col justify-between space-y-6">
-                  <div className="relative">
-                    <Quote className="w-8 h-8 text-emerald-200 absolute -top-2 -left-2" />
-                    <p className="text-gray-700 italic leading-relaxed pl-6 text-sm">
-                      "{coach.quote}"
-                    </p>
-                  </div>
-
-                  <div>
-                    <h4 className="font-semibold text-gray-900 mb-3 text-center">Specialties</h4>
-                    <div className="flex flex-wrap gap-2 justify-center">
-                      {coach.specialties.map((specialty, idx) =>
-                        <Badge key={idx} variant="outline" className="text-xs">
-                          {specialty}
-                        </Badge>
-                      )}
+                <Card className="h-full hover:shadow-2xl transition-all duration-500 hover:-translate-y-3 border-0 shadow-lg overflow-hidden group flex flex-col">
+                  <CardHeader className="pb-6 text-center">
+                    {/* Dynamic Profile Image */}
+                    {coach.image_url ? (
+                      <img
+                        src={coach.image_url}
+                        alt={coach.name}
+                        className="w-24 h-24 rounded-full mx-auto object-cover ring-4 ring-emerald-100 group-hover:ring-emerald-300 transition-all duration-300 mb-4"
+                        onError={(e) => {
+                          e.target.style.display = 'none';
+                          e.target.nextSibling.style.display = 'flex';
+                        }}
+                      />
+                    ) : null}
+                    <div className={`w-24 h-24 rounded-full mx-auto bg-gradient-to-br from-gray-400 to-gray-500 flex items-center justify-center ring-4 ring-emerald-100 group-hover:ring-emerald-300 transition-all duration-300 mb-4 ${coach.image_url ? 'hidden' : ''}`}>
+                      <span className="text-4xl font-bold text-white">?</span>
                     </div>
-                  </div>
-                </CardContent>
-              </Card>
-            </motion.div>
+
+                    <CardTitle className="text-xl font-bold text-gray-900 mb-1">
+                      {coach.name}
+                    </CardTitle>
+
+                    <p className="text-emerald-600 font-semibold">
+                      {coach.title || coach.position}
+                    </p>
+                  </CardHeader>
+
+                  <CardContent className="flex-grow flex flex-col justify-between space-y-6">
+                    {(coach.quote || coach.bio) && (
+                      <div className="relative">
+                        <Quote className="w-8 h-8 text-emerald-200 absolute -top-2 -left-2" />
+                        <p className="text-gray-700 italic leading-relaxed pl-6 text-sm">
+                          "{coach.quote || coach.bio}"
+                        </p>
+                      </div>
+                    )}
+
+                    {coach.specialties && coach.specialties.length > 0 && (
+                      <div>
+                        <h4 className="font-semibold text-gray-900 mb-3 text-center">Specialties</h4>
+                        <div className="flex flex-wrap gap-2 justify-center">
+                          {coach.specialties.map((specialty, idx) =>
+                            <Badge key={idx} variant="outline" className="text-xs">
+                              {specialty}
+                            </Badge>
+                          )}
+                        </div>
+                      </div>
+                    )}
+                  </CardContent>
+                </Card>
+              </motion.div>
+            )
+          ) : (
+            <div className="col-span-3 text-center py-12">
+              <p className="text-gray-500 text-lg">No coaches available at the moment.</p>
+            </div>
           )}
         </div>
 

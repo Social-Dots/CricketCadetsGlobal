@@ -77,12 +77,15 @@ const Locations = () => {
       postal_code: location.postal_code || '',
       phone: location.phone || '',
       email: location.email || '',
-      website: location.website || '',
-      description: location.description || '',
+      website: '', // Not stored in database
+      description: '', // Not stored in database
       facilities: location.facilities || [],
       operating_hours: location.operating_hours || {},
-      coordinates: location.coordinates || { lat: null, lng: null },
-      image_url: location.image_url || '',
+      coordinates: { 
+        lat: location.latitude || null, 
+        lng: location.longitude || null 
+      },
+      image_url: location.images && location.images.length > 0 ? location.images[0] : '',
       is_active: location.is_active !== false
     })
     setShowModal(true)
@@ -92,10 +95,23 @@ const Locations = () => {
     try {
       setSaving(true)
       
+      // Transform coordinates object to separate latitude/longitude fields
+      const locationData = {
+        ...formData,
+        latitude: formData.coordinates?.lat || null,
+        longitude: formData.coordinates?.lng || null,
+        images: formData.image_url ? [formData.image_url] : []
+      }
+      // Remove fields that don't exist in the database schema
+      delete locationData.coordinates
+      delete locationData.website
+      delete locationData.description
+      delete locationData.image_url
+      
       if (editingLocation) {
-        await updateLocation(editingLocation.id, formData)
+        await updateLocation(editingLocation.id, locationData)
       } else {
-        await createLocation(formData)
+        await createLocation(locationData)
       }
       
       await fetchLocations()

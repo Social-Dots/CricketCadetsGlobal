@@ -224,14 +224,14 @@ export default function Register() {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-emerald-50 to-white">
-      <div className="max-w-4xl mx-auto px-6 py-12">
+      <div className="max-w-4xl mx-auto px-6 pt-24 pb-12">
         {/* Header */}
         <motion.div
           initial={{ opacity: 0, y: 30 }}
           animate={{ opacity: 1, y: 0 }}
           className="text-center mb-12"
         >
-          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 mb-4">
+          <Badge className="bg-emerald-100 text-emerald-800 hover:bg-emerald-200 mb-4 px-4">
             🏏 Player Registration
           </Badge>
           <h1 className="text-4xl lg:text-5xl font-bold text-gray-900 mb-4">

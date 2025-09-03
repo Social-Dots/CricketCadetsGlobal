@@ -1,33 +1,45 @@
 
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Users, Target, Trophy, Calendar, Clock, Star, Zap } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { createPageUrl } from '@/utils';
+import { getPrograms } from '@/lib/supabase';
 
 export default function GlobalProgramsOverview() {
-  const programs = [
-    {
-      title: "Development Programs",
-      subtitle: "Ages 8-12",
-      description: "Building fundamentals through fun and engaging cricket experiences",
-      features: ["Skill Foundation", "Team Spirit", "Confidence Building", "Play-Based Learning"],
-      color: "from-blue-500 to-blue-600",
-      icon: Users,
-      image: "https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"
-    },
-    {
-      title: "Performance Programs", 
-      subtitle: "Ages 13-17",
-      description: "Elite pathway preparation with advanced techniques and mental conditioning",
-      features: ["Advanced Skills", "Mental Training", "Elite Pathways", "Performance Analytics"],
-      color: "from-emerald-500 to-emerald-600",
-      icon: Trophy,
-      image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQKgobzE44G-w_KnxHVRpfaSxtlk3DnY6uKiNdxrPLrArDAB2JqDX5KQdtlKUl8GZTYaKA&usqp=CAU"
-    }
-  ];
+  const [programs, setPrograms] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchPrograms = async () => {
+      try {
+        const data = await getPrograms();
+        setPrograms(data || []);
+      } catch (error) {
+        console.error('Error fetching programs:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPrograms();
+  }, []);
+  
+  // Helper function to get icon based on program type
+  const getIconForProgram = (title) => {
+    if (title?.toLowerCase().includes('development')) return Users;
+    if (title?.toLowerCase().includes('performance')) return Trophy;
+    return Target;
+  };
+  
+  // Helper function to get color based on program type
+  const getColorForProgram = (title) => {
+    if (title?.toLowerCase().includes('development')) return 'from-blue-500 to-blue-600';
+    if (title?.toLowerCase().includes('performance')) return 'from-emerald-500 to-emerald-600';
+    return 'from-purple-500 to-purple-600';
+  };
 
   const formats = [
     {
@@ -49,6 +61,34 @@ export default function GlobalProgramsOverview() {
       image: "https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"
     }
   ];
+
+  if (loading) {
+    return (
+      <section id="global-programs" className="py-24 bg-gradient-to-b from-gray-50 to-white">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="text-center mb-20">
+            <div className="animate-pulse">
+              <div className="h-8 bg-gray-200 rounded w-32 mx-auto mb-6"></div>
+              <div className="h-16 bg-gray-200 rounded w-96 mx-auto mb-8"></div>
+              <div className="h-6 bg-gray-200 rounded w-full max-w-3xl mx-auto"></div>
+            </div>
+          </div>
+          <div className="grid lg:grid-cols-2 gap-10">
+            {[1, 2].map((i) => (
+              <div key={i} className="animate-pulse">
+                <div className="h-64 bg-gray-200 rounded-t-lg"></div>
+                <div className="p-8 bg-white rounded-b-lg">
+                  <div className="h-6 bg-gray-200 rounded w-3/4 mb-4"></div>
+                  <div className="h-4 bg-gray-200 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+    );
+  }
 
   return (
     <section id="global-programs" className="py-24 bg-gradient-to-b from-gray-50 to-white">
@@ -78,7 +118,13 @@ export default function GlobalProgramsOverview() {
 
         {/* Main Programs with Images */}
         <div className="grid lg:grid-cols-2 gap-10 mb-20">
-          {programs.map((program, index) => (
+          {programs.map((program, index) => {
+            const programWithIcon = {
+              ...program,
+              icon: getIconForProgram(program.name),
+              color: getColorForProgram(program.name)
+            };
+            return (
             <motion.div
               key={index}
               initial={{ opacity: 0, x: index === 0 ? -30 : 30 }}
@@ -90,48 +136,55 @@ export default function GlobalProgramsOverview() {
                 {/* Image Header */}
                 <div className="relative h-64 overflow-hidden">
                   <img
-                    src={program.image}
-                    alt={program.title}
+                    src={programWithIcon.image}
+                    alt={programWithIcon.name}
                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                   />
                   <div className={`absolute inset-0 bg-gradient-to-t from-black/70 via-black/30 to-transparent`}></div>
                   
                   {/* Program Icon */}
-                  <div className={`absolute top-6 right-6 w-16 h-16 bg-gradient-to-r ${program.color} rounded-2xl flex items-center justify-center shadow-lg`}>
-                    <program.icon className="w-8 h-8 text-white" />
+                  <div className={`absolute top-6 right-6 w-16 h-16 bg-gradient-to-r ${programWithIcon.color} rounded-2xl flex items-center justify-center shadow-lg`}>
+                    {React.createElement(programWithIcon.icon, { className: "w-8 h-8 text-white" })}
                   </div>
                   
                   {/* Program Info Overlay */}
                   <div className="absolute bottom-6 left-6">
                     <Badge className="bg-white/20 backdrop-blur-sm text-white mb-3 px-3 py-1">
-                      {program.subtitle}
+                      {programWithIcon.subtitle}
                     </Badge>
-                    <h3 className="text-3xl font-bold text-white mb-2">{program.title}</h3>
+                    <h3 className="text-3xl font-bold text-white mb-2">{programWithIcon.name}</h3>
                   </div>
                 </div>
                 
                 <CardContent className="p-8 flex flex-col flex-grow">
-                  <p className="text-gray-600 text-lg leading-relaxed mb-6 flex-grow">{program.description}</p>
+                  <p className="text-gray-600 text-lg leading-relaxed mb-6 flex-grow">{programWithIcon.description}</p>
                   <div className="grid grid-cols-2 gap-3 mb-6">
-                    {program.features.map((feature, idx) => (
+                    {programWithIcon.features && programWithIcon.features.map((feature, idx) => (
                       <div key={idx} className="flex items-center gap-2 text-sm text-gray-700">
                         <div className="w-2 h-2 bg-emerald-500 rounded-full"></div>
                         {feature}
                       </div>
                     ))}
                   </div>
-                  {program.title === "Development Programs" && (
-                     <Button
-                        className="mt-auto w-full bg-emerald-600 hover:bg-emerald-700 text-white"
-                        onClick={() => window.location.href = createPageUrl('DevelopmentPrograms')}
-                      >
-                        Learn More <ArrowRight className="w-4 h-4 ml-2" />
-                      </Button>
+                  {(programWithIcon.page_url || programWithIcon.name === "Development Programs") && (
+                    <Button
+                      className="mt-auto w-full bg-emerald-600 hover:bg-emerald-700 text-white"
+                      onClick={() => {
+                        if (programWithIcon.page_url) {
+                          window.location.href = programWithIcon.page_url;
+                        } else if (programWithIcon.name === "Development Programs") {
+                          window.location.href = createPageUrl('DevelopmentPrograms');
+                        }
+                      }}
+                    >
+                      Learn More <ArrowRight className="w-4 h-4 ml-2" />
+                    </Button>
                   )}
                 </CardContent>
               </Card>
             </motion.div>
-          ))}
+            );
+          })}
         </div>
 
         {/* Program Formats */}
@@ -167,7 +220,7 @@ export default function GlobalProgramsOverview() {
                       <div>
                         <div className="flex items-center gap-4 mb-3">
                           <div className={`w-12 h-12 ${format.color} rounded-xl flex items-center justify-center`}>
-                            <format.icon className="w-6 h-6 text-white" />
+                            {React.createElement(format.icon, { className: "w-6 h-6 text-white" })}
                           </div>
                           <div>
                             <h4 className="text-xl font-bold text-gray-900">{format.title}</h4>

@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import Footer from '../components/global/Footer';
+import { getNavigationMenu, getSiteSettings } from '../lib/supabase';
 
 const AnimatedCricketCadet = ({ className }) => {
   const text = "Cricket Cadet";
@@ -47,6 +48,9 @@ const AnimatedCricketCadet = ({ className }) => {
 export default function Layout({ children, currentPageName }) {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const [navLinks, setNavLinks] = useState([]);
+  const [siteSettings, setSiteSettings] = useState({});
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -62,13 +66,46 @@ export default function Layout({ children, currentPageName }) {
     setIsMenuOpen(false);
   };
 
-  const navLinks = [
-  { name: 'About Us', href: '#about-us' },
-  { name: 'Programs', href: '#global-programs' },
-  { name: 'Coaches', href: '#global-coaches' },
-  { name: 'Locations', href: '#country-selector' } // Link to the country selector section
-  // Add more global links as per your structure: Tours & Events, Resources, Contact
-  ];
+  // Fetch navigation and site settings on component mount
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        setLoading(true);
+        
+        // Fetch navigation menu for global layout
+        const navigationData = await getNavigationMenu('global');
+        if (navigationData && navigationData.menu_items) {
+          setNavLinks(navigationData.menu_items);
+        } else {
+          // Fallback to static navigation if no data found
+          setNavLinks([
+            { name: 'About Us', href: '#about-us' },
+            { name: 'Programs', href: '#global-programs' },
+            { name: 'Coaches', href: '#global-coaches' },
+            { name: 'Locations', href: '#country-selector' }
+          ]);
+        }
+        
+        // Fetch site settings
+        const settings = await getSiteSettings();
+        setSiteSettings(settings);
+        
+      } catch (error) {
+        console.error('Error fetching navigation data:', error);
+        // Fallback to static navigation on error
+        setNavLinks([
+          { name: 'About Us', href: '#about-us' },
+          { name: 'Programs', href: '#global-programs' },
+          { name: 'Coaches', href: '#global-coaches' },
+          { name: 'Locations', href: '#country-selector' }
+        ]);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    fetchData();
+  }, []);
 
   const scrollToSection = (e, href) => {
     e.preventDefault();

@@ -59,15 +59,15 @@ export default function WhyChooseUsSection() {
             Why Cricket Cadets?
           </Badge>
           <h2 className="text-4xl md:text-5xl font-bold text-gray-900 mb-6">
-            The World's Most
+            Building the 
             <span className="text-transparent bg-clip-text bg-gradient-to-r from-emerald-600 to-emerald-400">
-              {" "}Trusted
+              most trusted cricket academy 
             </span>
             <br />
-            Cricket Academy
+            for the next generation of players.
           </h2>
           <p className="text-xl text-gray-600 max-w-4xl mx-auto leading-relaxed">
-            Join thousands of families worldwide who have chosen Cricket Cadets for their child's cricket development journey
+           Be part of the global movement shaping young cricketers with Cricket Cadets — the academy trusted by families worldwide.
           </p>
         </motion.div>
 

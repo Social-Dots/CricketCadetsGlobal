@@ -220,6 +220,128 @@ export const getHomepageHeroSection = async () => {
   return data && data.length > 0 ? data[0] : null
 }
 
+// Get development programs hero section
+export const getDevelopmentHeroSection = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('hero_title, hero_subtitle, hero_description, hero_background_image, title, subtitle, description')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching development hero section:', error)
+    return null
+  }
+  
+  if (data && data.length > 0) {
+    const program = data[0]
+    return {
+      title: program.hero_title || program.title || 'Where Fun Meets Fundamentals',
+      subtitle: program.hero_subtitle || program.subtitle || '',
+      description: program.hero_description || program.description || '',
+      background_image: program.hero_background_image || ''
+    }
+  }
+  
+  return null
+}
+
+// Get development program timeline data
+export const getDevelopmentTimeline = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('timeline_data')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching development timeline:', error)
+    return null
+  }
+  
+  return data && data.length > 0 ? data[0].timeline_data : null
+}
+
+// Get development program philosophy
+export const getDevelopmentPhilosophy = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('philosophy_principles')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching development philosophy:', error)
+    return null
+  }
+  
+  return data && data.length > 0 ? data[0].philosophy_principles : null
+}
+
+// Get development program skill categories
+export const getDevelopmentSkillCategories = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('skill_categories')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching development skill categories:', error)
+    return null
+  }
+  
+  return data && data.length > 0 ? data[0].skill_categories : null
+}
+
+// Get development program CTA content
+export const getDevelopmentCTA = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('cta_title, cta_description, cta_button_text')
+    .eq('is_active', true)
+    .order('created_at', { ascending: false })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching development CTA:', error)
+    return null
+  }
+  
+  if (data && data.length > 0) {
+    const program = data[0]
+    return {
+      title: program.cta_title || 'Ready to Start the Adventure?',
+      description: program.cta_description || 'Spots in our popular development camps fill up fast...',
+      button_text: program.cta_button_text || 'Join a Camp'
+    }
+  }
+  
+  return null
+}
+
+// Get Canada hero section
+export const getCanadaHeroSection = async () => {
+  const { data, error } = await supabase
+    .from('hero_sections')
+    .select('*')
+    .eq('is_active', true)
+    .ilike('title', '%canada%')
+    .order('sort_order', { ascending: true })
+    .limit(1)
+  
+  if (error) {
+    console.error('Error fetching Canada hero section:', error)
+    return null
+  }
+  
+  return data && data.length > 0 ? data[0] : null
+}
+
 // Get all hero sections
 export const getHeroSections = async () => {
   const { data, error } = await supabase
@@ -343,6 +465,67 @@ export const getNavigationMenu = async (location) => {
   }
   
   return data
+}
+
+// ============ DEVELOPMENT PROGRAMS FUNCTIONS ============
+// Get all development programs
+export const getDevelopmentPrograms = async () => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .select('*')
+    .eq('is_active', true)
+    .order('display_order', { ascending: true })
+  
+  if (error) {
+    console.error('Error fetching development programs:', error)
+    throw error
+  }
+  
+  return data
+}
+
+// Add a new development program
+export const addDevelopmentProgram = async (programData) => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .insert([programData])
+    .select()
+  
+  if (error) {
+    console.error('Error adding development program:', error)
+    throw error
+  }
+  
+  return data[0]
+}
+
+// Update a development program
+export const updateDevelopmentProgram = async (id, programData) => {
+  const { data, error } = await supabase
+    .from('development_programs')
+    .update({ ...programData, updated_at: new Date().toISOString() })
+    .eq('id', id)
+    .select()
+  
+  if (error) {
+    console.error('Error updating development program:', error)
+    throw error
+  }
+  
+  return data[0]
+}
+
+// Delete a development program
+export const deleteDevelopmentProgram = async (id) => {
+  const { error } = await supabase
+    .from('development_programs')
+    .delete()
+    .eq('id', id)
+  
+  if (error) {
+    console.error('Error deleting development program:', error)
+    throw error
+  }
 }
 
 // ============ SITE SETTINGS FUNCTIONS ============
@@ -668,17 +851,29 @@ export const deleteLocation = async (id) => {
 
 // ============ SITE SETTINGS FUNCTIONS ============
 export const updateSiteSettings = async (settingsData) => {
-  const { data, error } = await supabase
-    .from('site_settings')
-    .upsert(settingsData)
-    .select()
-  
-  if (error) {
-    console.error('Error updating site settings:', error)
+  try {
+    // Convert settings object to key-value pairs for upsert
+    const settingsArray = Object.entries(settingsData).map(([key, value]) => ({
+      key,
+      value: typeof value === 'object' ? JSON.stringify(value) : value,
+      is_active: true
+    }))
+    
+    const { data, error } = await supabase
+      .from('site_settings')
+      .upsert(settingsArray, { onConflict: 'key' })
+      .select()
+    
+    if (error) {
+      console.error('Error updating site settings:', error)
+      throw error
+    }
+    
+    return data
+  } catch (error) {
+    console.error('Error in updateSiteSettings:', error)
     throw error
   }
-  
-  return data
 }
 
 // ============ AUDIT LOG FUNCTIONS ============

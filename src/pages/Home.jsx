@@ -10,7 +10,6 @@ import GlobalProgramsOverview from '../components/global/GlobalProgramsOverview'
 import WhyChooseUsSection from '../components/global/WhyChooseUsSection';
 import GlobalCoachesSection from '../components/global/GlobalCoachesSection';
 import VideoTestimonialsSection from '../components/global/VideoTestimonialsSection';
-import GlobalPresenceSection from '../components/global/GlobalPresenceSection';
 import CountrySelectorSection from '../components/global/CountrySelectorSection';
 import RegistrationForm from '../components/landing/RegistrationForm';
 
@@ -37,7 +36,6 @@ export default function Home() {
       <WhyChooseUsSection />
       <GlobalCoachesSection />
       <VideoTestimonialsSection />
-      <GlobalPresenceSection />
       <CountrySelectorSection />
       
       <RegistrationForm

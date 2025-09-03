@@ -1,11 +1,21 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Sun, Shield, Users, Trophy, Clock, Target } from 'lucide-react';
+import { getDevelopmentTimeline } from '@/lib/supabase';
 
 export default function AWeekInTheLife() {
-  const timeline = [
+  const [timeline, setTimeline] = useState([]);
+  const [loading, setLoading] = useState(true);
+  
+  // Icon mapping for dynamic content
+  const iconMap = {
+    Sun, Shield, Users, Trophy, Clock, Target
+  };
+  
+  // Default timeline data as fallback
+  const defaultTimeline = [
     { 
-      icon: Sun, 
+      icon: "Sun", 
       title: "Dynamic Warm-Up Sessions", 
       description: "Energizing start with cricket-specific movements, agility drills, and team-building activities to prepare body and mind for training.", 
       time: "9:00 AM - 9:30 AM",
@@ -13,7 +23,7 @@ export default function AWeekInTheLife() {
       bgColor: "bg-orange-50"
     },
     { 
-      icon: Target, 
+      icon: "Target", 
       title: "Technical Skill Development", 
       description: "Focused coaching on batting technique, bowling accuracy, and fielding fundamentals through progressive skill-building exercises.", 
       time: "9:30 AM - 11:00 AM",
@@ -21,7 +31,7 @@ export default function AWeekInTheLife() {
       bgColor: "bg-blue-50"
     },
     { 
-      icon: Shield, 
+      icon: "Shield", 
       title: "Tactical Training Stations", 
       description: "Rotating through specialized stations covering match scenarios, strategic thinking, and position-specific skills development.", 
       time: "11:15 AM - 12:30 PM",
@@ -29,7 +39,7 @@ export default function AWeekInTheLife() {
       bgColor: "bg-green-50"
     },
     { 
-      icon: Users, 
+      icon: "Users", 
       title: "Competitive Match Play", 
       description: "Applying learned skills in structured mini-matches with real-time coaching feedback and tactical guidance.", 
       time: "1:30 PM - 2:45 PM",
@@ -37,7 +47,7 @@ export default function AWeekInTheLife() {
       bgColor: "bg-purple-50"
     },
     { 
-      icon: Clock, 
+      icon: "Clock", 
       title: "Mental Skills & Recovery", 
       description: "Focus on concentration techniques, match psychology, and proper cool-down routines for peak performance.", 
       time: "2:45 PM - 3:15 PM",
@@ -45,7 +55,7 @@ export default function AWeekInTheLife() {
       bgColor: "bg-teal-50"
     },
     { 
-      icon: Trophy, 
+      icon: "Trophy", 
       title: "Achievement Recognition", 
       description: "Celebrating individual progress, team achievements, and setting goals for continued development beyond the program.", 
       time: "3:15 PM - 3:45 PM",
@@ -53,6 +63,26 @@ export default function AWeekInTheLife() {
       bgColor: "bg-amber-50"
     }
   ];
+  
+  useEffect(() => {
+    const fetchTimelineData = async () => {
+      try {
+        const data = await getDevelopmentTimeline();
+        if (data && Array.isArray(data)) {
+          setTimeline(data);
+        } else {
+          setTimeline(defaultTimeline);
+        }
+      } catch (error) {
+        console.error('Error fetching timeline data:', error);
+        setTimeline(defaultTimeline);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchTimelineData();
+  }, []);
 
   const lineVariants = {
     hidden: { height: 0 },
@@ -88,6 +118,11 @@ export default function AWeekInTheLife() {
           </p>
         </motion.div>
 
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          </div>
+        ) : (
         <div className="relative">
           {/* Enhanced Timeline Line */}
           <motion.div
@@ -133,11 +168,11 @@ export default function AWeekInTheLife() {
                     <div className="relative z-10">
                       <div className="flex items-center justify-between mb-4">
                         <div className={`inline-flex items-center px-4 py-2 rounded-full bg-gradient-to-r ${item.color} text-white text-sm font-semibold shadow-lg`}>
-                          <item.icon className="w-4 h-4 mr-2" />
+                          {iconMap[item.icon] && React.createElement(iconMap[item.icon], { className: "w-4 h-4 mr-2" })}
                           {item.time}
                         </div>
                         <div className={`w-12 h-12 bg-gradient-to-br ${item.color} rounded-xl flex items-center justify-center text-white shadow-lg group-hover:scale-110 transition-transform duration-300`}>
-                          <item.icon className="w-6 h-6" />
+                          {iconMap[item.icon] && React.createElement(iconMap[item.icon], { className: "w-6 h-6" })}
                         </div>
                       </div>
                       
@@ -177,6 +212,7 @@ export default function AWeekInTheLife() {
             );
           })}
         </div>
+        )}
       </div>
     </section>
   );

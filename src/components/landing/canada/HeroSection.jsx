@@ -1,10 +1,42 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { ArrowRight, Play, Star, Trophy, Target, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+import { getCanadaHeroSection } from '@/lib/supabase';
 
 export default function HeroSection({ onRegisterClick }) {
+  const [heroData, setHeroData] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  useEffect(() => {
+    const fetchHeroData = async () => {
+      try {
+        const data = await getCanadaHeroSection();
+        setHeroData(data);
+      } catch (error) {
+        console.error('Error fetching hero data:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchHeroData();
+  }, []);
+
+  if (loading) {
+    return (
+      <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700">
+        <div className="text-center text-white">
+          <div className="animate-pulse">
+            <div className="h-8 bg-white/20 rounded w-64 mx-auto mb-4"></div>
+            <div className="h-16 bg-white/20 rounded w-96 mx-auto mb-6"></div>
+            <div className="h-6 bg-white/20 rounded w-full max-w-2xl mx-auto"></div>
+          </div>
+        </div>
+      </section>
+    );
+  }
   return (
     <section className="relative min-h-screen flex items-center justify-center overflow-hidden bg-gradient-to-br from-emerald-900 via-emerald-800 to-emerald-700">
       {/* Background Pattern */}
@@ -25,18 +57,20 @@ export default function HeroSection({ onRegisterClick }) {
             className="text-center lg:text-left"
           >
             {/* Badge */}
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: 0.2, duration: 0.6 }}
-              className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
-            >
-              <span className="text-2xl">🇨🇦</span>
-              <span className="text-white font-medium">Now in Canada</span>
-              <Badge variant="secondary" className="bg-emerald-400 text-emerald-900 hover:bg-emerald-300">
-                New
-              </Badge>
-            </motion.div>
+            {heroData?.badge_text && (
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2, duration: 0.6 }}
+                className="inline-flex items-center gap-2 bg-white/10 backdrop-blur-sm border border-white/20 rounded-full px-4 py-2 mb-6"
+              >
+                <span className="text-2xl">🇨🇦</span>
+                <span className="text-white font-medium">{heroData.badge_text}</span>
+                <Badge variant="secondary" className="bg-emerald-400 text-emerald-900 hover:bg-emerald-300">
+                  New
+                </Badge>
+              </motion.div>
+            )}
 
             {/* Main Heading */}
             <motion.h1
@@ -45,8 +79,12 @@ export default function HeroSection({ onRegisterClick }) {
               transition={{ delay: 0.4, duration: 0.8 }}
               className="text-5xl lg:text-7xl font-bold text-white mb-6 leading-tight"
             >
-              Cricket Cadets
-              <span className="block text-emerald-300">Canada</span>
+              {heroData?.title || (
+                <>
+                  Cricket Cadets
+                  <span className="block text-emerald-300">Canada</span>
+                </>
+              )}
             </motion.h1>
 
             {/* Subtitle */}
@@ -56,9 +94,19 @@ export default function HeroSection({ onRegisterClick }) {
               transition={{ delay: 0.6, duration: 0.6 }}
               className="text-xl lg:text-2xl text-emerald-100 mb-8 leading-relaxed"
             >
-              World-class cricket development programs now available across Canada. 
-              Join thousands of young cricketers building skills, confidence, and passion for the game.
+              {heroData?.subtitle || "World-class cricket development programs now available across Canada. Join thousands of young cricketers building skills, confidence, and passion for the game."}
             </motion.p>
+            
+            {heroData?.description && (
+              <motion.p
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.7, duration: 0.6 }}
+                className="text-lg text-emerald-200 mb-8 leading-relaxed"
+              >
+                {heroData.description}
+              </motion.p>
+            )}
 
             {/* Stats */}
             <motion.div
@@ -93,17 +141,20 @@ export default function HeroSection({ onRegisterClick }) {
                 size="lg"
                 className="bg-emerald-500 hover:bg-emerald-400 text-white px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg hover:shadow-xl"
               >
-                Join the Waitlist
+                {heroData?.primary_cta_text || "Join the Waitlist"}
                 <ArrowRight className="ml-2 w-5 h-5" />
               </Button>
-              <Button
-                variant="outline"
-                size="lg"
-                className="border-2 border-white text-white hover:bg-white hover:text-emerald-800 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
-              >
-                <Play className="mr-2 w-5 h-5" />
-                Watch Demo
-              </Button>
+              {heroData?.secondary_cta_text && (
+                <Button
+                  variant="outline"
+                  size="lg"
+                  className="border-2 border-white text-white hover:bg-white hover:text-emerald-800 px-8 py-4 text-lg font-semibold rounded-full transition-all duration-300"
+                  onClick={() => heroData.secondary_cta_link && window.open(heroData.secondary_cta_link, '_blank')}
+                >
+                  <Play className="mr-2 w-5 h-5" />
+                  {heroData.secondary_cta_text}
+                </Button>
+              )}
             </motion.div>
           </motion.div>
 

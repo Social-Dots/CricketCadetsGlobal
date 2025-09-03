@@ -1,12 +1,28 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { CheckCircle, Target, Users, Zap, Trophy, Star, Activity } from 'lucide-react';
+import { getDevelopmentSkillCategories } from '@/lib/supabase';
 
 export default function WhatTheyLearn() {
-  const skillCategories = [
+  const [skillCategories, setSkillCategories] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  // Icon mapping for dynamic content
+  const iconMap = {
+    'Target': Target,
+    'Users': Users,
+    'Activity': Activity,
+    'Zap': Zap,
+    'Trophy': Trophy,
+    'Star': Star,
+    'CheckCircle': CheckCircle
+  };
+
+  // Default skill categories as fallback
+  const defaultSkillCategories = [
     {
       title: "Cricket Fundamentals",
-      icon: Target,
+      icon: "Target",
       color: "text-emerald-600",
       bgColor: "bg-emerald-50",
       borderColor: "border-emerald-200",
@@ -22,7 +38,7 @@ export default function WhatTheyLearn() {
     },
     {
       title: "Game Sense & Strategy",
-      icon: Users,
+      icon: "Users",
       color: "text-blue-600",
       bgColor: "bg-blue-50",
       borderColor: "border-blue-200",
@@ -38,7 +54,7 @@ export default function WhatTheyLearn() {
     },
     {
       title: "Physical Development",
-      icon: Activity,
+      icon: "Activity",
       color: "text-purple-600",
       bgColor: "bg-purple-50",
       borderColor: "border-purple-200",
@@ -53,6 +69,26 @@ export default function WhatTheyLearn() {
       ]
     }
   ];
+
+  useEffect(() => {
+    const fetchSkillCategories = async () => {
+      try {
+        const data = await getDevelopmentSkillCategories();
+        if (data && data.length > 0) {
+          setSkillCategories(data);
+        } else {
+          setSkillCategories(defaultSkillCategories);
+        }
+      } catch (error) {
+        console.error('Error fetching skill categories:', error);
+        setSkillCategories(defaultSkillCategories);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchSkillCategories();
+  }, []);
 
   return (
     <section className="py-24 bg-gradient-to-br from-slate-50 via-gray-50 to-emerald-50 relative overflow-hidden">
@@ -83,9 +119,14 @@ export default function WhatTheyLearn() {
           </p>
         </motion.div>
 
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-green-600"></div>
+          </div>
+        ) : (
         <div className="grid lg:grid-cols-3 gap-8">
           {skillCategories.map((category, index) => {
-            const IconComponent = category.icon;
+            const IconComponent = iconMap[category.icon];
             return (
               <motion.div
                 key={category.title}
@@ -153,6 +194,7 @@ export default function WhatTheyLearn() {
             );
           })}
         </div>
+        )}
       </div>
     </section>
   );

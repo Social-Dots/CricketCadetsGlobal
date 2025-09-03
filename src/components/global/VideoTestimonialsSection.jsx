@@ -4,9 +4,9 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Play, Quote, Star, Globe, ArrowLeft, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { getFeaturedTestimonials } from '@/lib/supabase';
+import { getTestimonials } from '@/lib/supabase';
 
-export default function VideoTestimonialsSection() {
+export default function TestimonialsSection() {
   const [activeVideo, setActiveVideo] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
   const [testimonials, setTestimonials] = useState([]);
@@ -15,10 +15,9 @@ export default function VideoTestimonialsSection() {
   useEffect(() => {
     const fetchTestimonials = async () => {
       try {
-        const data = await getFeaturedTestimonials();
-        // Filter for video testimonials only
-        const videoTestimonials = data?.filter(testimonial => testimonial.is_video && testimonial.video_url) || [];
-        setTestimonials(videoTestimonials);
+        const data = await getTestimonials();
+        // Get all testimonials from database
+        setTestimonials(data || []);
       } catch (error) {
         console.error('Error fetching testimonials:', error);
         setTestimonials([]);
@@ -82,7 +81,7 @@ export default function VideoTestimonialsSection() {
             </span>
           </h2>
           <p className="text-xl text-gray-300 max-w-4xl mx-auto leading-relaxed">
-            Parents and players from around the world share their Cricket Cadets experience
+            Parents and players from around the world share their Cricket Cadets experience through videos and testimonials
           </p>
         </motion.div>
 
@@ -96,30 +95,40 @@ export default function VideoTestimonialsSection() {
             className="relative"
           >
             <div className="relative aspect-video rounded-2xl overflow-hidden shadow-2xl">
-              {isPlaying ? (
-                <iframe
-                  src={testimonials[activeVideo].video_url}
-                  title={`Testimonial from ${testimonials[activeVideo].name}`}
-                  className="w-full h-full"
-                  allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-                  allowFullScreen
-                />
-              ) : (
-                <>
-                  <img
-                    src={testimonials[activeVideo].image || 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
-                    alt={`${testimonials[activeVideo].name} testimonial`}
-                    className="w-full h-full object-cover"
+              {testimonials[activeVideo]?.is_video && testimonials[activeVideo]?.video_url ? (
+                isPlaying ? (
+                  <iframe
+                    src={testimonials[activeVideo].video_url}
+                    title={`Testimonial from ${testimonials[activeVideo].name}`}
+                    className="w-full h-full"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowFullScreen
                   />
-                  <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
-                    <Button
-                      onClick={() => setIsPlaying(true)}
-                      className="group bg-white/20 backdrop-blur-sm hover:bg-white/30 border-2 border-white/50 rounded-full p-6"
-                    >
-                      <Play className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
-                    </Button>
+                ) : (
+                  <>
+                    <img
+                      src={testimonials[activeVideo].image || 'https://images.unsplash.com/photo-1544717297-fa95b6ee9643?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80'}
+                      alt={`${testimonials[activeVideo].name} testimonial`}
+                      className="w-full h-full object-cover"
+                    />
+                    <div className="absolute inset-0 bg-black/40 flex items-center justify-center">
+                      <Button
+                        onClick={() => setIsPlaying(true)}
+                        className="group bg-white/20 backdrop-blur-sm hover:bg-white/30 border-2 border-white/50 rounded-full p-6"
+                      >
+                        <Play className="w-8 h-8 text-white group-hover:scale-110 transition-transform" />
+                      </Button>
+                    </div>
+                  </>
+                )
+              ) : (
+                <div className="w-full h-full bg-gradient-to-br from-gray-800 to-gray-900 flex items-center justify-center">
+                  <div className="text-center p-8">
+                    <Quote className="w-16 h-16 text-amber-400/50 mx-auto mb-4" />
+                    <h3 className="text-2xl font-bold text-white mb-2">{testimonials[activeVideo]?.name}</h3>
+                    <p className="text-gray-300">{testimonials[activeVideo]?.location}</p>
                   </div>
-                </>
+                </div>
               )}
             </div>
 
