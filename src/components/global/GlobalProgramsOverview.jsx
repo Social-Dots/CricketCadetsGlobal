@@ -173,7 +173,7 @@ export default function GlobalProgramsOverview() {
                         if (programWithIcon.page_url) {
                           window.location.href = programWithIcon.page_url;
                         } else if (programWithIcon.name === "Development Programs") {
-                          window.location.href = createPageUrl('DevelopmentPrograms');
+                          window.location.href = createPageUrl('camp');
                         }
                       }}
                     >

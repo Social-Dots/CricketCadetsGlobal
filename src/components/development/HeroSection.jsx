@@ -56,11 +56,11 @@ export default function HeroSection({ onRegisterClick }) {
       {/* Background Image */}
       <div className="absolute inset-0 z-0">
         <img
-          src={heroData?.background_image || "https://images.icc-cricket.com/image/upload/t_ratio16_9-size30-webp/prd/ekplqm9uptgbtauwpqm7"}
+          src={heroData?.background_image || "https://cricmax.com/wp-content/uploads/2025/03/A-young-child.webp"}
           alt="Kids playing cricket"
-          className="w-full h-full object-cover opacity-30"
+          className="w-full h-full object-cover opacity-50"
         />
-        <div className="absolute inset-0 via-white/80 to-transparent" style={{ opacity: heroData?.overlay_opacity || 0.8 }}></div>
+        <div className="absolute " style={{ opacity: heroData?.overlay_opacity || 0.8 }}></div>
       </div>
 
       {/* Animated background shapes */}

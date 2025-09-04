@@ -4,6 +4,7 @@ import React, { useState, useEffect } from 'react';
 import { Button } from "@/components/ui/button";
 import { Menu, X, ArrowRight } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
+import { useNavigate, useLocation } from 'react-router-dom';
 import Footer from '../components/global/Footer';
 import { getNavigationMenu, getSiteSettings } from '../lib/supabase';
 
@@ -46,6 +47,8 @@ const AnimatedCricketCadet = ({ className }) => {
 };
 
 export default function Layout({ children, currentPageName }) {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [navLinks, setNavLinks] = useState([]);
@@ -61,8 +64,15 @@ export default function Layout({ children, currentPageName }) {
   }, []);
 
   const handleRegisterClick = () => {
-    // Dispatch event only if on the global home or specific country page that handles registration
-    window.dispatchEvent(new CustomEvent('showRegistration'));
+    // If already on register page, scroll to form, otherwise navigate to register page
+    if (location.pathname === '/register') {
+      const formElement = document.querySelector('form');
+      if (formElement) {
+        formElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      }
+    } else {
+      navigate('/register');
+    }
     setIsMenuOpen(false);
   };
 
@@ -107,11 +117,33 @@ export default function Layout({ children, currentPageName }) {
     fetchData();
   }, []);
 
+  // Handle navigation with hash (for section scrolling)
+  useEffect(() => {
+    const hash = location.hash;
+    if (hash && (location.pathname === '/' || location.pathname === '/Home')) {
+      // Wait a bit for the page to render, then scroll to section
+      setTimeout(() => {
+        const section = document.querySelector(hash);
+        if (section) {
+          section.scrollIntoView({ behavior: 'smooth' });
+        }
+      }, 100);
+    }
+  }, [location]);
+
   const scrollToSection = (e, href) => {
     e.preventDefault();
     // Special case for scrolling to top or direct page navigation
     if (href === '#top') {
       window.scrollTo({ top: 0, behavior: 'smooth' });
+      setIsMenuOpen(false);
+      return;
+    }
+
+    // If we're not on the home page, navigate to home first
+    if (location.pathname !== '/' && location.pathname !== '/Home') {
+      // Navigate to home page with the section hash
+      navigate('/' + href);
       setIsMenuOpen(false);
       return;
     }
@@ -167,7 +199,7 @@ export default function Layout({ children, currentPageName }) {
                 key={link.name}
                 href={link.href}
                 onClick={(e) => scrollToSection(e, link.href)}
-                className="text-emerald-100 hover:text-white transition-colors text-sm font-medium relative group">
+                className={`${location.pathname === '/camp' ? 'text-gray-900 hover:text-black' : 'text-emerald-100 hover:text-white'} transition-colors text-sm font-medium relative group`}>
 
                                     {link.name}
                                     <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-amber-400 transition-all duration-300 group-hover:w-full"></span>
@@ -192,7 +224,7 @@ export default function Layout({ children, currentPageName }) {
                 variant="ghost"
                 size="icon"
                 onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className="text-white hover:bg-white/10 transition-colors"
+                className={`${location.pathname === '/camp' ? 'text-gray-900 hover:bg-gray-900/10' : 'text-white hover:bg-white/10'} transition-colors`}
                 aria-label={isMenuOpen ? "Close menu" : "Open menu"}>
 
                                 <motion.div
@@ -239,7 +271,7 @@ export default function Layout({ children, currentPageName }) {
                   key={link.name}
                   href={link.href}
                   onClick={(e) => scrollToSection(e, link.href)}
-                  className="text-emerald-100 hover:text-white transition-colors text-lg font-medium py-2 px-4 rounded-lg hover:bg-white/10 w-full text-center"
+                  className={`${location.pathname === '/camp' ? 'text-gray-900 hover:text-black' : 'text-emerald-100 hover:text-white'} transition-colors text-lg font-medium py-2 px-4 rounded-lg hover:bg-white/10 w-full text-center`}
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: index * 0.1 }}>

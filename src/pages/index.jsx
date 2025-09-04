@@ -74,7 +74,7 @@ function PagesContent() {
                         <Route path="/" element={<Home />} />
                         <Route path="/Home" element={<Home />} />
                         <Route path="/Canada" element={<Canada />} />
-                        <Route path="/DevelopmentPrograms" element={<DevelopmentPrograms />} />
+                        <Route path="/camp" element={<DevelopmentPrograms />} />
                         <Route path="/register" element={<Register />} />
                     </Routes>
                 </Layout>
